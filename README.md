@@ -2,74 +2,68 @@
 
 A Rails application for coordinating schedules across time zones.
 
-## Current status
+## Prerequisites
 
-The project is in early development. The initial models, database migrations,
-Dev Container, and RSpec setup are in place. Scheduling screens, time zone
-comparison, and application workflows are not implemented yet. Model specs
-currently contain pending examples.
+Install the following on the host:
 
-| Model | Purpose |
-| --- | --- |
-| `Event` | Scheduling event with a name, description, time zone, and `public_token`. |
-| `TimeOption` | A candidate start time belonging to an event. |
-| `Response` | An event participant's name, time zone, and comment. |
-| `Vote` | Availability for a candidate time, linked to a response and a time option. |
+- Git
+- VS Code with the Dev Containers extension
+- A Docker-compatible runtime: Colima with the Docker runtime or Docker Desktop
+- Docker CLI, Compose, and Buildx
 
-The database has required-column constraints, foreign keys, and unique indexes
-for event public tokens and candidate start times within an event. Additional
-model associations, validations, and public token generation are still to be
-implemented.
+Ruby and PostgreSQL run inside the Dev Container and do not need to be installed on the host.
+Their versions are configured in `.ruby-version` and `.devcontainer/`.
 
-## Stack
+## Setup
 
-- Ruby 4.0.3 and Rails 8.1
-- PostgreSQL 16.1 in the Dev Container
-- Hotwire (Turbo and Stimulus), import maps, and Propshaft
-- RSpec Rails and FactoryBot
-- AnnotateRb for schema annotations
+Clone the repository into a directory named `timezone_scheduler` to match the configured workspace path, then open that directory in VS Code.
 
-## Development environment
-
-Use VS Code with the Dev Containers extension and a running Docker-compatible
-runtime, such as Colima with the Docker runtime or Docker Desktop. Docker CLI,
-Compose, and Buildx must be available on the host.
-
-For an existing Colima installation, start it on the host:
+Start Docker Desktop, or start Colima from a **host terminal**:
 
 ```bash
 colima start --runtime docker
+```
+
+Check that Docker and its plugins are available on the host:
+
+```bash
 docker info
 docker compose version
 docker buildx version
 ```
 
-Open the repository in VS Code and run **Dev Containers: Reopen in Container**.
-Keep the checkout directory named `timezone_scheduler` to match the configured
-workspace path.
+In VS Code, run **Dev Containers: Reopen in Container** from the Command Palette.
 
 The container starts PostgreSQL and runs `bin/setup --skip-server` automatically.
-This installs missing gems, prepares the database, and clears old logs and
-temporary files. If setup fails, resolve the reported error and rerun that
-command inside the container.
+This installs missing gems, prepares the database, and clears old logs and temporary files.
+If setup fails, resolve the reported error and rerun that command inside the container.
 
-Run the commands below inside the Dev Container terminal. Ruby and PostgreSQL
-do not need to be installed on the host.
+Unless stated otherwise, run all commands below from the project root in the **Dev Container terminal**.
 
 ## Run the application
+
+For each development session, start your Docker runtime on the host, reopen the project in the Dev Container, and start Rails:
 
 ```bash
 bin/dev
 ```
 
-This starts the Rails server. The container sets `BINDING=0.0.0.0` and forwards
-port 3000. Open `http://localhost:3000`, or the forwarded address shown by VS Code.
-There is no application root route yet; `/up` is available as a health check.
+This starts the Rails server.
+The container sets `BINDING=0.0.0.0` and forwards port 3000.
+Open `http://localhost:3000`, or the forwarded address shown by VS Code.
+The `/up` endpoint is available as a health check.
+
+Press `Ctrl+C` in the server terminal to stop Rails.
+To stop this project's containers, run the following from the repository root in a **host terminal**:
+
+```bash
+docker compose -f .devcontainer/compose.yaml stop
+```
 
 ## Database
 
-The Dev Container sets `DB_HOST=postgres`. Development and test use separate
-databases, `timezone_scheduler_development` and `timezone_scheduler_test`.
+The Dev Container sets `DB_HOST=postgres`.
+Development and test use separate databases, `timezone_scheduler_development` and `timezone_scheduler_test`.
 PostgreSQL data persists in the Compose `postgres-data` volume.
 
 Prepare the database when setting up or updating the application:
@@ -83,9 +77,6 @@ Apply new migrations:
 ```bash
 bin/rails db:migrate
 ```
-
-AnnotateRb is configured to update schema annotations through development
-database tasks.
 
 ## Tests and checks
 
@@ -111,11 +102,7 @@ bin/bundler-audit
 bin/importmap audit
 ```
 
-`config/ci.rb` still invokes the default `bin/rails test` command. Run RSpec
-explicitly until that configuration is updated; `bin/ci` does not currently
-run the RSpec suite.
-
-## Gem dependencies
+## Dependencies
 
 Add application dependencies to `Gemfile` and run:
 
@@ -123,6 +110,8 @@ Add application dependencies to `Gemfile` and run:
 bundle install
 ```
 
-Alternatively, use `bundle add GEM_NAME`. Commit both `Gemfile` and
-`Gemfile.lock` when dependencies change. Installing a gem with `gem install`
-alone does not record it as an application dependency.
+Alternatively, use `bundle add GEM_NAME`.
+Commit both `Gemfile` and `Gemfile.lock` when dependencies change.
+
+After pulling changes to dependencies, run `bundle install` again.
+After pulling new database migrations, run `bin/rails db:prepare` before starting the server.
