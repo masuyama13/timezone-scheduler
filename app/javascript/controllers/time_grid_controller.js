@@ -124,20 +124,21 @@ export default class extends Controller {
     header.className = "flex min-h-16 items-start justify-between gap-2 bg-slate-50 px-3 py-3"
 
     const details = document.createElement("div")
+    details.className = "min-w-0 flex-1"
     const name = document.createElement("strong")
     name.className = "block text-slate-700"
     name.textContent = city.name
     details.append(name)
 
     const current = document.createElement("span")
-    current.className = "mt-1 block text-xs font-normal text-slate-500"
+    current.className = "mt-1 block whitespace-nowrap text-[0.65rem] font-normal leading-tight text-slate-500"
     current.textContent = this.formatCurrentTime(new Date(), city.timeZone)
     details.append(current)
     header.append(details)
 
     const action = document.createElement("button")
     action.type = "button"
-    action.className = "w-fit rounded-lg px-1 py-0.5 text-xs font-bold hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    action.className = "w-fit shrink-0 rounded-lg px-1 py-0.5 text-xs font-bold hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
     action.classList.add(city.primary ? "text-blue-700" : "text-slate-400")
     if (city.primary) {
       action.dataset.action = "click->world-clock#openChange"
