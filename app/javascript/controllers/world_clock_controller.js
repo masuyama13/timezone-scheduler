@@ -70,6 +70,7 @@ export default class extends Controller {
       this.cities.push({ ...city, primary: this.cities.length === 0 })
     }
 
+    this.cities.sort((a, b) => Number(b.primary) - Number(a.primary))
     this.replacementMode = false
     this.saveCities()
     this.closeSearch()
@@ -175,7 +176,11 @@ export default class extends Controller {
         .slice(0, MAX_CITIES)
       const storedPrimary = stored.find((city) => city?.primary)?.key
       const primaryKey = storedPrimary && valid.some((city) => city.key === storedPrimary) ? storedPrimary : valid[0]?.key
-      if (valid.length > 0) return valid.map((city) => ({ ...city, primary: city.key === primaryKey }))
+      if (valid.length > 0) {
+        return valid
+          .map((city) => ({ ...city, primary: city.key === primaryKey }))
+          .sort((a, b) => Number(b.primary) - Number(a.primary))
+      }
     }
 
     const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone

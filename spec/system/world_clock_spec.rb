@@ -39,6 +39,7 @@ RSpec.describe "World Clock", type: :system do
 
     expect(page).to have_content("Vancouver")
     expect(page).not_to have_content("Tokyo")
+    expect(page).to have_css("[data-time-grid-target='row']:first-child", text: /Vancouver/)
   end
 
   it "does not offer removal for the primary city" do
