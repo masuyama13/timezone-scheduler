@@ -1,0 +1,22 @@
+export const CITY_CATALOG = [
+  { key: "vancouver", name: "Vancouver", region: "Canada", timeZone: "America/Vancouver" },
+  { key: "toronto", name: "Toronto", region: "Canada", timeZone: "America/Toronto" },
+  { key: "new-york", name: "New York", region: "United States", timeZone: "America/New_York" },
+  { key: "chicago", name: "Chicago", region: "United States", timeZone: "America/Chicago" },
+  { key: "denver", name: "Denver", region: "United States", timeZone: "America/Denver" },
+  { key: "los-angeles", name: "Los Angeles", region: "United States", timeZone: "America/Los_Angeles" },
+  { key: "honolulu", name: "Honolulu", region: "United States", timeZone: "Pacific/Honolulu" },
+  { key: "mexico-city", name: "Mexico City", region: "Mexico", timeZone: "America/Mexico_City" },
+  { key: "sao-paulo", name: "São Paulo", region: "Brazil", timeZone: "America/Sao_Paulo" },
+  { key: "london", name: "London", region: "United Kingdom", timeZone: "Europe/London" },
+  { key: "paris", name: "Paris", region: "France", timeZone: "Europe/Paris" },
+  { key: "berlin", name: "Berlin", region: "Germany", timeZone: "Europe/Berlin" },
+  { key: "dubai", name: "Dubai", region: "United Arab Emirates", timeZone: "Asia/Dubai" },
+  { key: "delhi", name: "Delhi", region: "India", timeZone: "Asia/Kolkata" },
+  { key: "singapore", name: "Singapore", region: "Singapore", timeZone: "Asia/Singapore" },
+  { key: "hong-kong", name: "Hong Kong", region: "Hong Kong", timeZone: "Asia/Hong_Kong" },
+  { key: "tokyo", name: "Tokyo", region: "Japan", timeZone: "Asia/Tokyo" },
+  { key: "seoul", name: "Seoul", region: "South Korea", timeZone: "Asia/Seoul" },
+  { key: "sydney", name: "Sydney", region: "Australia", timeZone: "Australia/Sydney" },
+  { key: "auckland", name: "Auckland", region: "New Zealand", timeZone: "Pacific/Auckland" }
+]
