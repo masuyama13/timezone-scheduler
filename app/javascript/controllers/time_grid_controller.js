@@ -121,7 +121,7 @@ export default class extends Controller {
 
   cityHeader(city) {
     const header = document.createElement("div")
-    header.className = "flex min-h-16 flex-col justify-between gap-2 bg-slate-50 px-3 py-3"
+    header.className = "flex min-h-16 items-start justify-between gap-2 bg-slate-50 px-3 py-3"
 
     const details = document.createElement("div")
     const name = document.createElement("strong")
@@ -137,18 +137,41 @@ export default class extends Controller {
 
     const action = document.createElement("button")
     action.type = "button"
-    action.className = "w-fit rounded-lg px-1 py-0.5 text-xs font-bold text-blue-700 hover:bg-blue-50"
+    action.className = "w-fit rounded-lg px-1 py-0.5 text-xs font-bold hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    action.classList.add(city.primary ? "text-blue-700" : "text-slate-400")
     if (city.primary) {
       action.dataset.action = "click->world-clock#openChange"
       action.setAttribute("aria-label", "Change your city")
-      action.textContent = "Change"
+      action.title = "Change your city"
+      action.append(this.icon("pencil"))
     } else {
       action.dataset.cityKey = city.key
       action.dataset.action = "click->world-clock#removeCity"
-      action.textContent = "Remove"
+      action.setAttribute("aria-label", `Remove ${city.name}`)
+      action.title = `Remove ${city.name}`
+      action.append(this.icon("trash"))
     }
     header.append(action)
     return header
+  }
+
+  icon(name) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    svg.setAttribute("viewBox", "0 0 24 24")
+    svg.setAttribute("fill", "none")
+    svg.setAttribute("stroke", "currentColor")
+    svg.setAttribute("stroke-width", "1.8")
+    svg.setAttribute("aria-hidden", "true")
+    svg.classList.add("h-4", "w-4")
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+    path.setAttribute("stroke-linecap", "round")
+    path.setAttribute("stroke-linejoin", "round")
+    path.setAttribute("d", name === "pencil"
+      ? "m16.862 3.487 3.651 3.651M18.5 2.75a2.121 2.121 0 0 1 3 3L7.5 19.75 3 21l1.25-4.5L18.5 2.75Z"
+      : "m6 7.5 1 12h10l1-12M4.5 7.5h15M9.5 7.5V5h5v2.5M10 11v5M14 11v5")
+    svg.append(path)
+    return svg
   }
 
   currentHour() {
