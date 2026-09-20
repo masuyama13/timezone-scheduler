@@ -58,7 +58,7 @@ export default class extends Controller {
     const hours = mobile ? 12 : 24
     const start = new Date(this.currentHour().getTime() + (mobile ? this.mobileHourOffset : 0) * 60 * 60 * 1000)
     this.renderNavigation(mobile)
-    const cityColumn = mobile ? "8rem" : "10rem"
+    const cityColumn = "9rem"
     const columns = `${cityColumn} repeat(${hours}, minmax(0, 1fr))`
     const table = document.createElement("div")
     table.className = "w-full"
@@ -121,20 +121,13 @@ export default class extends Controller {
 
   cityHeader(city) {
     const header = document.createElement("div")
-    header.className = "flex min-h-16 items-start justify-between gap-2 bg-slate-50 px-3 py-3"
+    header.className = "min-h-16 bg-slate-50 px-3 py-3"
 
-    const details = document.createElement("div")
-    details.className = "min-w-0 flex-1"
+    const cityLine = document.createElement("div")
+    cityLine.className = "flex items-start justify-between gap-2"
     const name = document.createElement("strong")
     name.className = "block text-slate-700"
     name.textContent = city.name
-    details.append(name)
-
-    const current = document.createElement("span")
-    current.className = "mt-1 block whitespace-nowrap text-[0.65rem] font-normal leading-tight text-slate-500"
-    current.textContent = this.formatCurrentTime(new Date(), city.timeZone)
-    details.append(current)
-    header.append(details)
 
     const action = document.createElement("button")
     action.type = "button"
@@ -152,7 +145,13 @@ export default class extends Controller {
       action.title = `Remove ${city.name}`
       action.append(this.icon("trash"))
     }
-    header.append(action)
+    cityLine.append(name, action)
+    header.append(cityLine)
+
+    const current = document.createElement("span")
+    current.className = "mt-1 block text-[0.65rem] font-normal leading-tight text-slate-500"
+    current.textContent = this.formatCurrentTime(new Date(), city.timeZone)
+    header.append(current)
     return header
   }
 
