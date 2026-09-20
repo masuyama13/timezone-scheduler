@@ -5,7 +5,7 @@ const MAX_CITIES = 10
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["cityCount", "searchPanel", "searchInput", "searchResults", "message"]
+  static targets = ["cityCount", "searchPanel", "searchInput", "searchResults", "message", "addCityButton"]
 
   connect() {
     this.cities = this.loadCities()
@@ -95,6 +95,7 @@ export default class extends Controller {
 
   render() {
     this.cityCountTarget.textContent = `${this.cities.length} of ${MAX_CITIES} cities`
+    if (this.hasAddCityButtonTarget) this.addCityButtonTarget.disabled = this.cities.length >= MAX_CITIES
     window.dispatchEvent(new CustomEvent("world-clock:cities-changed", { detail: this.cities }))
     this.renderSearchResults()
   }
