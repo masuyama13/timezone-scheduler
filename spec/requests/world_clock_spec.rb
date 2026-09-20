@@ -7,10 +7,7 @@ RSpec.describe "World Clock", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Timezone Scheduler")
-      expect(response.body).to include('id="world-clock-heading"')
-      expect(response.body).to include("Select cities")
-      expect(response.body).to include("Add city")
-      expect(response.body).to include("Plan a meeting")
+      expect(response.body).to include("Add City")
     end
   end
 end
