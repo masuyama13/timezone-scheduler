@@ -5,11 +5,12 @@ const MAX_CITIES = 10
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["cityList", "cityCount", "searchPanel", "searchInput", "searchResults", "message"]
+  static targets = ["cityCount", "searchPanel", "searchInput", "searchResults", "message"]
 
   connect() {
     this.cities = this.loadCities()
     this.replacementMode = false
+    this.saveCities()
     this.render()
     this.boundCloseOnEscape = (event) => {
       if (event.key === "Escape" && !this.searchPanelTarget.hidden) this.closeSearch()
@@ -93,17 +94,7 @@ export default class extends Controller {
 
   render() {
     this.cityCountTarget.textContent = `${this.cities.length} of ${MAX_CITIES} cities`
-    this.cityListTarget.replaceChildren()
-
-    if (this.cities.length === 0) {
-      const emptyState = document.createElement("p")
-      emptyState.className = "text-center text-slate-500"
-      emptyState.textContent = "Choose your city to start comparing local time."
-      this.cityListTarget.append(emptyState)
-    } else {
-      this.cities.forEach((city) => this.cityListTarget.append(this.cityCard(city)))
-    }
-
+    window.dispatchEvent(new CustomEvent("world-clock:cities-changed", { detail: this.cities }))
     this.renderSearchResults()
   }
 

@@ -7,6 +7,12 @@ RSpec.describe "World Clock", type: :system do
     page.execute_script("window.localStorage.setItem('timezone-scheduler.world-clock', JSON.stringify([{ key: 'tokyo', primary: true }])); window.location.reload()")
   end
 
+  it "renders a 24-hour grid for the selected cities" do
+    expect(page).to have_css("[data-time-grid-target='row']", count: 1)
+    expect(page).to have_css("[data-time-grid-target='row'] div", minimum: 24)
+    expect(page).to have_content("Tokyo")
+  end
+
   it "adds a city from the search modal" do
     open_city_search
     fill_in "City or country", with: "Vancouver"
