@@ -142,6 +142,16 @@ RSpec.describe "World Clock", type: :system do
     expect(page).not_to have_button("Retry")
   end
 
+  it "opens a minute-level preview from a time cell" do
+    first("[data-instant]").click
+    expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page).to have_field("Date")
+    expect(page).to have_field("Time")
+    expect(page).to have_text("Tokyo")
+    fill_in "Time", with: "00:17"
+    expect(page).to have_text("12:17 AM")
+  end
+
   private
 
   def select_date(value)
