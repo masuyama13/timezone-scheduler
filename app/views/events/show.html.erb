@@ -42,5 +42,13 @@
       <% end %>
       <p class="text-xs text-slate-500">This page and its responses may be deleted after one year.</p>
     </section>
+
+    <% if management_authorized?(@event) %>
+      <section class="grid gap-3 border-t border-slate-200 pt-6" aria-labelledby="delete-event-heading">
+        <h2 id="delete-event-heading" class="text-lg font-bold">Delete schedule</h2>
+        <p class="text-sm text-slate-600">This will permanently delete this page, all time options, responses, and comments.</p>
+        <%= button_to "Delete schedule", event_path(@event.public_token), method: :delete, data: { turbo_confirm: "Delete #{@event.name}? This will permanently delete the schedule and all responses." }, authenticity_token: false, class: "w-fit rounded-lg bg-red-700 px-4 py-2 text-sm font-bold text-white hover:bg-red-800" %>
+      </section>
+    <% end %>
   </main>
 </div>

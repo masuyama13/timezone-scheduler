@@ -1,5 +1,5 @@
 class EventsController < ApplicationController
-  skip_forgery_protection only: :create
+  skip_forgery_protection only: [ :create, :destroy ]
 
   def create
     result = Events::Create.new(
@@ -10,7 +10,7 @@ class EventsController < ApplicationController
       instants: event_params[:instants]
     ).call
 
-    cookies.signed[management_cookie_key(result.event)] = {
+    cookies[management_cookie_key(result.event)] = {
       value: result.management_token,
       httponly: true,
       secure: Rails.env.production?,
@@ -26,10 +26,28 @@ class EventsController < ApplicationController
     @event = Event.includes(:event_cities, :time_options).find_by!(public_token: params[:public_token])
   end
 
+  def destroy
+    event = Event.find_by!(public_token: params[:public_token])
+    Events::Destroy.new(
+      event: event,
+      management_token: cookies[management_cookie_key(event)]
+    ).call
+    cookies.delete(management_cookie_key(event))
+    redirect_to root_path, status: :see_other
+  rescue Events::Destroy::AuthorizationError
+    head :forbidden
+  end
+
   private
 
   def event_params
     params.permit(:name, :description, :time_zone, instants: [], cities: [ :key, :name, :region, :time_zone, :is_primary, :primary ])
+  end
+
+  helper_method :management_authorized?
+
+  def management_authorized?(event)
+    Events::Destroy.authorized?(event, cookies[management_cookie_key(event)])
   end
 
   def management_cookie_key(event)

@@ -54,6 +54,30 @@ RSpec.describe "Events", type: :request do
 
       expect(response).to have_http_status(:not_found)
     end
+
+    it "deletes a schedule with the management cookie" do
+      post events_path, params: params
+      event = Event.last
+
+      expect {
+        delete event_path(event.public_token)
+      }.to change(Event, :count).by(-1)
+
+      expect(response).to have_http_status(:see_other)
+      get event_path(event.public_token)
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "rejects deletion without the management cookie" do
+      post events_path, params: params
+      event = Event.last
+      cookies.delete("event_management_#{event.public_token}")
+
+      delete event_path(event.public_token)
+
+      expect(response).to have_http_status(:forbidden)
+      expect(Event.exists?(event.id)).to be(true)
+    end
   end
 
 end

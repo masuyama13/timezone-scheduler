@@ -229,6 +229,12 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_text("Choose a time together")
     expect(page).to have_button("Copy link")
     expect(page).to have_text("Option 1")
+    expect(page).to have_button("Delete schedule")
+
+    accept_confirm do
+      click_button "Delete schedule"
+    end
+    expect(page).to have_current_path(root_path)
   end
 
   private
