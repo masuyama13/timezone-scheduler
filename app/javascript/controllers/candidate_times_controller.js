@@ -4,7 +4,7 @@ import { CITY_CATALOG } from "city_catalog"
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewModal", "reviewList", "planStatus"]
+  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewModal", "reviewList", "planStatus", "createForm", "createName", "createDescription", "createStatus", "createButton", "createResult"]
   static values = { url: String, reviewUrl: String }
 
   connect() {
@@ -54,6 +54,10 @@ export default class extends Controller {
     if (this.candidates.length < 1) return
 
     this.reviewListTarget.replaceChildren()
+    this.createFormTarget.hidden = false
+    this.createStatusTarget.textContent = ""
+    this.createResultTarget.replaceChildren()
+    this.createButtonTarget.disabled = false
     this.candidates.forEach((candidate, index) => {
       const section = document.createElement("section")
       section.className = "border-b border-slate-100 pb-3 last:border-b-0 last:pb-0"
@@ -65,6 +69,56 @@ export default class extends Controller {
       this.reviewListTarget.append(section)
     })
     this.reviewModalTarget.hidden = false
+  }
+
+  async createEvent(event) {
+    event.preventDefault()
+    const primaryCity = this.primaryCity()
+    if (!primaryCity) return
+
+    this.createStatusTarget.textContent = ""
+    this.createResultTarget.replaceChildren()
+    this.createButtonTarget.disabled = true
+
+    const body = new URLSearchParams()
+    body.set("name", this.createNameTarget.value)
+    body.set("description", this.createDescriptionTarget.value)
+    body.set("time_zone", primaryCity.timeZone)
+    this.cities().forEach((city) => {
+      body.append("cities[][key]", city.key)
+      body.append("cities[][name]", city.name)
+      body.append("cities[][region]", city.region)
+      body.append("cities[][time_zone]", city.timeZone)
+      body.append("cities[][is_primary]", city.primary ? "true" : "false")
+    })
+    this.candidates.forEach((candidate) => body.append("instants[]", candidate.instant))
+
+    try {
+      const response = await fetch("/events", {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body
+      })
+      const responseText = await response.text()
+      let data = {}
+      try {
+        data = JSON.parse(responseText)
+      } catch (_error) {
+        data = {}
+      }
+      if (!response.ok) throw new Error(data.errors?.join(" ") || "Could not create the event. Please try again.")
+
+      this.createFormTarget.hidden = true
+      this.createStatusTarget.textContent = "Event created. Share this link:"
+      const link = document.createElement("a")
+      link.className = "mt-2 block break-all text-sm font-bold text-blue-700 underline"
+      link.href = `/events/${data.public_token}`
+      link.textContent = new URL(link.href, window.location.origin).toString()
+      this.createResultTarget.append(link)
+    } catch (error) {
+      this.createButtonTarget.disabled = false
+      this.createStatusTarget.textContent = error.message
+    }
   }
 
   closeReview() {

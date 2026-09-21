@@ -179,8 +179,22 @@ RSpec.describe "World Clock", type: :system do
     click_button "Plan a meeting"
 
     expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
+    expect(page).to have_text("Plan a meeting")
+    expect(page).to have_text("Time options")
+    expect(page).to have_text("By creating this schedule, you agree to the Terms of Service.")
+    expect(page).to have_field("Description", with: "")
+    expect(page).to have_css('[aria-labelledby="review-times-heading"] .max-w-lg')
+    expect(page).to have_css('#event-description[rows="2"]')
     expect(page).to have_text("1.")
     expect(page).to have_text("Tokyo")
+    expect(page.evaluate_script(<<~JS)).to be(true)
+      (() => {
+        const modal = document.querySelector('[aria-labelledby="review-times-heading"]')
+        const form = modal.querySelector('form')
+        const list = modal.querySelector('[data-candidate-times-target="reviewList"]')
+        return Boolean(form && list && (form.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING))
+      })()
+    JS
   end
 
   it "validates selected times from the review modal" do
@@ -196,6 +210,25 @@ RSpec.describe "World Clock", type: :system do
 
     expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
     expect(page).not_to have_css('[aria-labelledby="candidate-time-heading"]', visible: true)
+  end
+
+  it "creates an event from the review modal" do
+    select_date((Date.current + 2).iso8601)
+    expect(page).to have_text("12 AM")
+    first("[data-instant]").click
+    click_button "Add this time"
+    click_button "Close"
+    click_button "Plan a meeting"
+
+    fill_in "Title", with: "Team sync"
+    fill_in "Description", with: "Choose a time together"
+    click_button "Create"
+
+    expect(page).to have_text("Event created. Share this link:")
+    expect(page).to have_css("a[href^='/events/']")
+    expect(Event.last.name).to eq("Team sync")
+    expect(Event.last.description).to eq("Choose a time together")
+    expect(Event.last.time_options.count).to eq(1)
   end
 
   private
