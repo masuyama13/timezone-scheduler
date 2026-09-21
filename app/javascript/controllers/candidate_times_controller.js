@@ -4,7 +4,7 @@ import { CITY_CATALOG } from "city_catalog"
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewButton", "reviewModal", "reviewList", "reviewStatus", "validateButton"]
+  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewButton", "reviewModal", "reviewList", "planStatus"]
   static values = { url: String, reviewUrl: String }
 
   connect() {
@@ -54,7 +54,6 @@ export default class extends Controller {
     if (this.candidates.length < 2) return
 
     this.reviewListTarget.replaceChildren()
-    this.reviewStatusTarget.textContent = ""
     this.candidates.forEach((candidate, index) => {
       const section = document.createElement("section")
       section.className = "border-b border-slate-100 pb-3 last:border-b-0 last:pb-0"
@@ -72,9 +71,17 @@ export default class extends Controller {
     this.reviewModalTarget.hidden = true
   }
 
+  async planMeeting() {
+    if (this.candidates.length < 2) {
+      this.planStatusTarget.textContent = "Select at least two time options before planning a meeting."
+      return
+    }
+
+    this.planStatusTarget.textContent = ""
+    if (await this.validateCandidates()) this.review()
+  }
+
   async validateCandidates() {
-    this.validateButtonTarget.disabled = true
-    this.reviewStatusTarget.textContent = ""
     try {
       const body = new URLSearchParams()
       this.candidates.forEach((candidate) => body.append("instants[]", candidate.instant))
@@ -91,11 +98,10 @@ export default class extends Controller {
         data = {}
       }
       if (!response.ok) throw new Error(data.errors?.join(" ") || "Candidate validation failed. Please try again.")
-      this.reviewStatusTarget.textContent = "Candidate times are valid and ready for event details."
+      return true
     } catch (error) {
-      this.reviewStatusTarget.textContent = error.message
-    } finally {
-      this.validateButtonTarget.disabled = false
+      this.planStatusTarget.textContent = error.message
+      return false
     }
   }
 

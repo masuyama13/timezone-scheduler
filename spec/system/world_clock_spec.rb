@@ -177,6 +177,8 @@ RSpec.describe "World Clock", type: :system do
     click_button "Add this time"
     click_button "Close"
     expect(page).not_to have_button("Review selected times")
+    click_button "Plan a meeting"
+    expect(page).to have_text("Select at least two time options before planning a meeting.")
 
     all("[data-instant]")[1].click
     click_button "Add this time"
@@ -199,10 +201,10 @@ RSpec.describe "World Clock", type: :system do
     all("[data-instant]")[1].click
     click_button "Add this time"
     click_button "Close"
-    click_button "Review selected times"
-    click_button "Validate candidates"
+    click_button "Plan a meeting"
 
-    expect(page).to have_text("Candidate times are valid and ready for event details.")
+    expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
+    expect(page).not_to have_css('[aria-labelledby="candidate-time-heading"]', visible: true)
   end
 
   private
