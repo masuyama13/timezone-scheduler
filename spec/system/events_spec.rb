@@ -15,7 +15,7 @@ RSpec.describe "Shared event", type: :system do
   end
 
   before do
-    driven_by :selenium, using: :headless_chrome, screen_size: [ 1280, 900 ]
+    driven_by :selenium_chromium, screen_size: [ 1280, 900 ]
     visit event_path(event.public_token)
   end
 
