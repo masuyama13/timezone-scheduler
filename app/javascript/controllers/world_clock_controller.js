@@ -202,7 +202,10 @@ export default class extends Controller {
   }
 
   showMessage(message) {
-    if (this.hasMessageTarget) this.messageTarget.textContent = message
+    if (this.hasMessageTarget) {
+      this.messageTarget.textContent = message
+      this.messageTarget.hidden = false
+    }
   }
 
   escapeHtml(value) {

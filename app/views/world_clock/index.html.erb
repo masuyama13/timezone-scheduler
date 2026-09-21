@@ -1,6 +1,6 @@
 <% content_for :title, "World Clock | Timezone Scheduler" %>
 
-<div class="min-h-screen bg-slate-50 text-slate-900" data-controller="world-clock time-grid">
+<div class="min-h-screen bg-slate-50 text-slate-900" data-controller="world-clock time-grid" data-time-grid-url-value="<%= world_clock_timeline_path %>">
   <header class="border-b border-slate-200 bg-slate-50">
     <div class="mx-auto flex h-12 max-w-4xl items-center px-4 sm:px-6">
       <h1 class="text-base font-bold tracking-tight sm:text-lg">Timezone Scheduler</h1>
@@ -9,12 +9,22 @@
 
   <main class="mx-auto grid max-w-4xl gap-10 px-4 py-6 sm:px-6 sm:py-8">
     <section aria-label="World Clock">
-      <div class="flex items-start justify-between gap-4">
-        <button type="button" data-world-clock-target="addCityButton" data-action="click->world-clock#openAdd" class="rounded-xl bg-blue-700 px-4 py-3 font-bold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">+ Add City</button>
-        <span class="shrink-0 text-sm text-slate-500" data-world-clock-target="cityCount">0 of 10 cities</span>
+      <div class="flex items-center gap-2">
+        <div class="min-w-0 flex-1 items-center justify-start gap-1" data-time-grid-target="dateControls" hidden>
+          <button type="button" aria-label="Previous day" data-action="time-grid#previousDay" class="shrink-0 rounded-lg px-1.5 py-2 text-sm text-blue-700">←</button>
+          <label for="comparison-date" class="sr-only">Comparison date</label>
+          <input id="comparison-date" type="date" data-time-grid-target="dateInput" data-action="change->time-grid#changeDate" class="min-w-0 w-[8rem] max-w-full rounded-lg border border-slate-300 px-1.5 py-2 text-sm sm:w-auto sm:px-2">
+          <button type="button" aria-label="Next day" data-action="time-grid#nextDay" class="shrink-0 rounded-lg px-1.5 py-2 text-sm text-blue-700">→</button>
+        </div>
+        <button type="button" data-world-clock-target="addCityButton" data-action="click->world-clock#openAdd" class="shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">+ Add City</button>
       </div>
 
-      <p class="min-h-6 pt-2 text-sm text-amber-700" data-world-clock-target="message" role="status"></p>
+      <div class="w-full text-right">
+        <span class="text-xs text-slate-500" data-world-clock-target="cityCount">0 of 10 cities</span>
+      </div>
+      <p class="pt-2 text-sm text-amber-700" data-world-clock-target="message" role="status" hidden></p>
+      <p data-time-grid-target="status" role="status" class="text-sm text-amber-700"></p>
+      <button type="button" data-time-grid-target="retry" data-action="time-grid#refresh" class="rounded-lg px-3 py-2 text-sm text-blue-700" hidden>Retry</button>
       <div class="mb-3 flex items-center justify-between gap-2" data-time-grid-target="navigation" hidden></div>
       <div class="mt-4" data-time-grid-target="grid" aria-live="polite"></div>
 
