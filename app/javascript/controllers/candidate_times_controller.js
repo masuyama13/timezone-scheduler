@@ -51,7 +51,7 @@ export default class extends Controller {
   }
 
   review() {
-    if (this.candidates.length < 2) return
+    if (this.candidates.length < 1) return
 
     this.reviewListTarget.replaceChildren()
     this.candidates.forEach((candidate, index) => {
@@ -72,8 +72,8 @@ export default class extends Controller {
   }
 
   async planMeeting() {
-    if (this.candidates.length < 2) {
-      this.planStatusTarget.textContent = "Select at least two time options before planning a meeting."
+    if (this.candidates.length < 1) {
+      this.planStatusTarget.textContent = "Select at least one time option before planning a meeting."
       return
     }
 

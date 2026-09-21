@@ -1,7 +1,7 @@
 class EventCandidatesForm
   include ActiveModel::Model
 
-  MINIMUM = 2
+  MINIMUM = 1
   MAXIMUM = 10
 
   attr_accessor :instants
