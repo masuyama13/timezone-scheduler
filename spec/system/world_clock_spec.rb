@@ -170,6 +170,26 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_no_css("[data-candidate-times-target='list'] button")
   end
 
+  it "reviews selected times after choosing at least two" do
+    expect(page).not_to have_button("Review selected times")
+
+    first("[data-instant]").click
+    click_button "Add this time"
+    click_button "Close"
+    expect(page).not_to have_button("Review selected times")
+
+    all("[data-instant]")[1].click
+    click_button "Add this time"
+    click_button "Close"
+    expect(page).to have_button("Review selected times", disabled: false)
+    click_button "Review selected times"
+
+    expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
+    expect(page).to have_text("1.")
+    expect(page).to have_text("2.")
+    expect(page).to have_text("Tokyo")
+  end
+
   private
 
   def select_date(value)
