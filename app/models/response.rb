@@ -21,4 +21,8 @@
 class Response < ApplicationRecord
   belongs_to :event
   has_many :votes, dependent: :destroy
+
+  validates :name, presence: true, length: { maximum: 50 }
+  validates :time_zone, presence: true
+  validates :comment, length: { maximum: 400 }
 end
