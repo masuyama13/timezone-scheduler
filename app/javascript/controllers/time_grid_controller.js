@@ -4,22 +4,25 @@ import { CITY_CATALOG } from "city_catalog"
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["grid", "navigation"]
+  static targets = ["grid", "navigation", "dateControls", "dateInput", "status", "retry"]
+  static values = { url: String }
 
   connect() {
     this.mobileHourOffset = 0
+    this.instants = []
     this.cities = this.loadCities()
     this.boundCitiesChanged = (event) => {
       this.cities = event.detail || this.loadCities()
-      this.render()
+      this.refresh()
     }
     window.addEventListener("world-clock:cities-changed", this.boundCitiesChanged)
     this.boundResize = () => this.render()
     window.addEventListener("resize", this.boundResize)
-    this.render()
+    this.refresh()
   }
 
   disconnect() {
+    this.request?.abort()
     window.removeEventListener("world-clock:cities-changed", this.boundCitiesChanged)
     window.removeEventListener("resize", this.boundResize)
   }
@@ -42,8 +45,84 @@ export default class extends Controller {
     return []
   }
 
+  primaryCity() {
+    return this.cities.find((city) => city.primary) || this.cities[0]
+  }
+
+  async refresh() {
+    this.request?.abort()
+    const primary = this.primaryCity()
+    this.dateControlsTarget.hidden = !primary
+    this.dateControlsTarget.classList.toggle("flex", Boolean(primary))
+    this.retryTarget.hidden = true
+    this.statusTarget.textContent = ""
+    if (!primary) {
+      this.instants = []
+      this.loadedKey = null
+      this.render()
+      return
+    }
+
+    this.selectedDate ||= this.localDate(new Date(), primary.timeZone)
+    this.dateInputTarget.value = this.selectedDate
+    const key = `${this.selectedDate}/${primary.timeZone}`
+    if (this.loadedKey === key) {
+      this.render()
+      return
+    }
+
+    const request = new AbortController()
+    this.request = request
+    try {
+      const url = new URL(this.urlValue, window.location.origin)
+      url.search = new URLSearchParams({ date: this.selectedDate, time_zone: primary.timeZone })
+      const response = await fetch(url, { signal: request.signal, headers: { Accept: "application/json" } })
+      if (!response.ok) throw new Error("Timeline request failed")
+      const data = await response.json()
+      if (request.signal.aborted) return
+      this.instants = data.instants.map((value) => new Date(value))
+      this.loadedKey = key
+      this.mobileHourOffset = 0
+      this.statusTarget.textContent = this.instants.length ? "" : "This date does not exist in the selected timezone."
+      this.render()
+    } catch (error) {
+      if (request.signal.aborted) return
+      this.instants = []
+      this.loadedKey = null
+      this.mobileHourOffset = 0
+      this.render()
+      this.statusTarget.textContent = "Could not load this date. Please try again."
+      this.retryTarget.hidden = false
+    }
+  }
+
+  changeDate() {
+    if (!this.dateInputTarget.value || !this.dateInputTarget.validity.valid) return
+    this.selectedDate = this.dateInputTarget.value
+    this.refresh()
+  }
+
+  previousDay() { this.moveDay(-1) }
+  nextDay() { this.moveDay(1) }
+
+  moveDay(amount) {
+    const date = new Date(`${this.selectedDate}T00:00:00Z`)
+    date.setUTCDate(date.getUTCDate() + amount)
+    this.selectedDate = date.toISOString().split("T")[0]
+    this.refresh()
+  }
+
+  localDate(instant, timeZone) {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone, year: "numeric", month: "2-digit", day: "2-digit"
+    }).formatToParts(instant)
+    const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]))
+    return `${values.year}-${values.month}-${values.day}`
+  }
+
   render() {
     this.gridTarget.replaceChildren()
+    this.navigationTarget.hidden = true
 
     if (this.cities.length === 0) {
       const empty = document.createElement("p")
@@ -53,10 +132,9 @@ export default class extends Controller {
       return
     }
 
-    const primaryCity = this.cities.find((city) => city.primary) || this.cities[0]
     const mobile = window.matchMedia("(max-width: 639px)").matches
-    const hours = mobile ? 12 : 24
-    const start = new Date(this.currentHour().getTime() + (mobile ? this.mobileHourOffset : 0) * 60 * 60 * 1000)
+    const visibleInstants = mobile ? this.instants.slice(this.mobileHourOffset, this.mobileHourOffset + 12) : this.instants
+    const hours = Math.max(visibleInstants.length, 1)
     this.renderNavigation(mobile)
     const cityColumn = "9rem"
     const columns = `${cityColumn} repeat(${hours}, minmax(0, 1fr))`
@@ -72,10 +150,24 @@ export default class extends Controller {
       cityCell.classList.add("sticky", "left-0", "z-[1]")
       row.append(cityCell)
 
-      for (let hour = 0; hour < hours; hour += 1) {
-        const instant = new Date(start.getTime() + hour * 60 * 60 * 1000)
-        row.append(this.cell(this.formatTime(instant, city.timeZone, true), "bg-white px-1 py-4 text-center text-xs text-slate-600"))
-      }
+      const labels = this.instants.map((instant) => `${this.localDate(instant, city.timeZone)} ${this.formatTime(instant, city.timeZone)}`)
+      let previousDate
+      visibleInstants.forEach((instant) => {
+        const date = this.localDate(instant, city.timeZone)
+        const time = this.formatTime(instant, city.timeZone, true)
+        const cell = this.cell(time, "min-w-0 bg-white px-0.5 py-4 text-center text-[0.65rem] text-slate-600")
+        cell.dataset.instant = instant.toISOString()
+        cell.setAttribute("aria-label", `${city.name}, ${date}, ${this.formatTime(instant, city.timeZone)}, ${this.offsetLabel(instant, city.timeZone)}`)
+        if (date !== previousDate) {
+          cell.append(this.cell(this.formatDate(instant, city.timeZone), "block text-[0.55rem] text-slate-500"))
+        }
+        const label = `${date} ${this.formatTime(instant, city.timeZone)}`
+        if (labels.filter((value) => value === label).length > 1) {
+          cell.append(this.cell(this.offsetLabel(instant, city.timeZone), "block text-[0.55rem] text-slate-500"))
+        }
+        previousDate = date
+        row.append(cell)
+      })
       table.append(row)
     })
 
@@ -89,10 +181,11 @@ export default class extends Controller {
     if (!this.hasNavigationTarget) return
 
     this.navigationTarget.replaceChildren()
-    this.navigationTarget.hidden = !mobile
-    if (!mobile) return
+    this.navigationTarget.hidden = !mobile || this.instants.length <= 12
+    if (this.navigationTarget.hidden) return
 
     const previous = document.createElement("button")
+    previous.disabled = this.mobileHourOffset === 0
     previous.type = "button"
     previous.className = "rounded-lg px-3 py-2 text-sm font-bold text-blue-700 hover:bg-blue-50"
     previous.setAttribute("aria-label", "Show previous 12 hours")
@@ -100,6 +193,7 @@ export default class extends Controller {
     previous.dataset.action = "click->time-grid#previousPage"
 
     const next = document.createElement("button")
+    next.disabled = this.mobileHourOffset + 12 >= this.instants.length
     next.type = "button"
     next.className = "rounded-lg px-3 py-2 text-sm font-bold text-blue-700 hover:bg-blue-50"
     next.setAttribute("aria-label", "Show next 12 hours")
@@ -115,7 +209,7 @@ export default class extends Controller {
   }
 
   nextPage() {
-    this.mobileHourOffset = 12
+    this.mobileHourOffset = Math.min(Math.floor((this.instants.length - 1) / 12) * 12, this.mobileHourOffset + 12)
     this.render()
   }
 
@@ -174,31 +268,9 @@ export default class extends Controller {
     return svg
   }
 
-  currentHour() {
-    const primaryCity = this.cities.find((city) => city.primary) || this.cities[0]
-    const parts = new Intl.DateTimeFormat("en-US", {
-      timeZone: primaryCity.timeZone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).formatToParts(new Date())
-    const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)]))
-    const localMidnight = Date.UTC(values.year, values.month - 1, values.day)
-    const offsetParts = new Intl.DateTimeFormat("en-US", {
-      timeZone: primaryCity.timeZone,
-      timeZoneName: "longOffset",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hourCycle: "h23"
-    }).formatToParts(new Date(localMidnight))
-    const offset = offsetParts.find((part) => part.type === "timeZoneName")?.value || "GMT"
-    const match = offset.match(/GMT([+-])(\d{2}):(\d{2})/)
-    const offsetMinutes = match ? (Number(match[2]) * 60 + Number(match[3])) * (match[1] === "+" ? 1 : -1) : 0
-    return new Date(localMidnight - offsetMinutes * 60 * 1000)
+  offsetLabel(instant, timeZone) {
+    return new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "longOffset" })
+      .formatToParts(instant).find((part) => part.type === "timeZoneName").value
   }
 
   formatCurrentTime(instant, timeZone) {
@@ -224,13 +296,13 @@ export default class extends Controller {
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone,
       hour: "numeric",
-      minute: compact ? undefined : "2-digit",
+      minute: "2-digit",
       hour12: true
     }).formatToParts(instant)
     const hour = parts.find((part) => part.type === "hour")?.value || ""
     const minute = parts.find((part) => part.type === "minute")?.value || "00"
     const period = parts.find((part) => part.type === "dayPeriod")?.value || ""
-    return compact ? `${hour} ${period}` : `${hour}:${minute} ${period}`
+    return compact && minute === "00" ? `${hour} ${period}` : `${hour}:${minute} ${period}`
   }
 
   cell(text, className) {

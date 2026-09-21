@@ -9,5 +9,7 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  get "world_clock/timeline", to: "world_clock/timelines#show", as: :world_clock_timeline
+
   root "world_clock#index"
 end
