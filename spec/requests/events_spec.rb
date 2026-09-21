@@ -86,5 +86,41 @@ RSpec.describe "Events", type: :request do
 
       expect(response).to have_http_status(:not_found)
     end
+
+    it "accepts a response with availability choices" do
+      post events_path, params: params
+      event = Event.last
+      choices = event.time_options.order(:starts_at).each_with_index.to_h do |time_option, index|
+        [ index.to_s, { time_option_id: time_option.id, availability: index.zero? ? "available" : "maybe" } ]
+      end
+
+      expect {
+        post event_responses_path(event.public_token), params: {
+          name: "Alex",
+          time_zone: "America/Vancouver",
+          comment: "Looking forward to it",
+          choices: choices
+        }, as: :json
+      }.to change(Response, :count).by(1).and change(Vote, :count).by(2)
+
+      expect(response).to have_http_status(:created)
+      expect(response.parsed_body.fetch("response_id")).to eq(Response.last.id)
+      expect(Response.last.votes.pluck(:availability)).to contain_exactly("available", "maybe")
+    end
+
+    it "rejects a response with an unanswered time option" do
+      post events_path, params: params
+      event = Event.last
+      time_option = event.time_options.first
+
+      post event_responses_path(event.public_token), params: {
+        name: "Alex",
+        time_zone: "America/Vancouver",
+        choices: { "0" => { time_option_id: time_option.id, availability: "available" } }
+      }, as: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body.fetch("errors")).to include("Answer every time option.")
+    end
   end
 end
