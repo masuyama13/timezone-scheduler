@@ -10,17 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_19_030944) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "event_cities", force: :cascade do |t|
+    t.string "city_key", null: false
+    t.datetime "created_at", null: false
+    t.bigint "event_id", null: false
+    t.boolean "is_primary", default: false, null: false
+    t.string "name", null: false
+    t.string "region", null: false
+    t.string "time_zone", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "city_key"], name: "index_event_cities_on_event_id_and_city_key", unique: true
+    t.index ["event_id"], name: "index_event_cities_on_event_id"
+  end
 
   create_table "events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
+    t.string "management_token_digest"
     t.string "name", null: false
     t.string "public_token", null: false
     t.string "time_zone", null: false
     t.datetime "updated_at", null: false
+    t.index ["management_token_digest"], name: "index_events_on_management_token_digest", unique: true
     t.index ["public_token"], name: "index_events_on_public_token", unique: true
   end
 
@@ -53,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_19_030944) do
     t.index ["time_option_id"], name: "index_votes_on_time_option_id"
   end
 
+  add_foreign_key "event_cities", "events"
   add_foreign_key "responses", "events"
   add_foreign_key "time_options", "events"
   add_foreign_key "votes", "responses"

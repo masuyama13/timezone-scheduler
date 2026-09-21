@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 # == Schema Information
 #
@@ -21,5 +21,9 @@ require 'rails_helper'
 #  fk_rails_...  (event_id => events.id)
 #
 RSpec.describe Response, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "owns its votes" do
+    association = described_class.reflect_on_association(:votes)
+
+    expect(association.options[:dependent]).to eq(:destroy)
+  end
 end
