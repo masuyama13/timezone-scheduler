@@ -198,9 +198,13 @@ export default class extends Controller {
   }
 
   format(instant, timeZone) {
-    return new Intl.DateTimeFormat("en-US", {
-      timeZone, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+    const date = new Intl.DateTimeFormat("en-US", {
+      timeZone, weekday: "short", month: "short", day: "numeric"
     }).format(new Date(instant))
+    const time = new Intl.DateTimeFormat("en-US", {
+      timeZone, hour: "numeric", minute: "2-digit"
+    }).format(new Date(instant))
+    return `${date} at ${time}`
   }
 
   offsetLabel(instant, timeZone) {

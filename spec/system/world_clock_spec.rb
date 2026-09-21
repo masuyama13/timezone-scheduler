@@ -188,7 +188,7 @@ RSpec.describe "World Clock", type: :system do
   end
 
   def open_city_search
-    click_button "Add City"
+    click_button "Add city"
     expect(page).to have_css('[role="dialog"]', visible: true)
   end
 

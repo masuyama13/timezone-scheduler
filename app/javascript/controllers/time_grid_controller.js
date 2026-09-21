@@ -83,7 +83,7 @@ export default class extends Controller {
       this.instants = data.instants.map((value) => new Date(value))
       this.loadedKey = key
       this.mobileHourOffset = 0
-      this.statusTarget.textContent = this.instants.length ? "" : "This date does not exist in the selected timezone."
+      this.statusTarget.textContent = this.instants.length ? "" : "There are no local times on this date in the selected timezone."
       this.render()
     } catch (error) {
       if (request.signal.aborted) return
