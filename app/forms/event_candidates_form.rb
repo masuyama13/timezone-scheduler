@@ -1,7 +1,7 @@
 class EventCandidatesForm
   include ActiveModel::Model
 
-  MINIMUM = 2
+  MINIMUM = 1
   MAXIMUM = 10
 
   attr_accessor :instants
@@ -28,6 +28,6 @@ class EventCandidatesForm
     return errors.add(:instants, "must contain valid UTC timestamps") unless parsed.length == Array(instants).length
     return errors.add(:instants, "must not contain duplicate times") unless parsed.uniq.length == parsed.length
 
-    errors.add(:instants, "must be in the future") unless parsed.all? { |instant| instant > Time.current }
+    errors.add(:base, "Select times in the future.") unless parsed.all? { |instant| instant > Time.current }
   end
 end

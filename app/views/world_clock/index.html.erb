@@ -47,7 +47,11 @@
           <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h3 id="review-times-heading" class="text-lg font-bold">Review selected times</h3>
-              <button type="button" class="rounded-lg px-2 py-1 text-sm font-bold text-blue-700 hover:bg-blue-50" data-action="click->candidate-times#closeReview">Close</button>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="click->candidate-times#closeReview">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+                  <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
             <div data-candidate-times-target="reviewList" class="mt-4 grid gap-4"></div>
           </div>
@@ -60,7 +64,11 @@
           <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h3 id="candidate-time-heading" class="text-lg font-bold">Choose a time</h3>
-              <button type="button" class="rounded-lg px-2 py-1 text-sm font-bold text-blue-700 hover:bg-blue-50" data-action="click->candidate-times#close">Close</button>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="click->candidate-times#close">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+                  <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
             <div class="mt-5 grid grid-cols-2 gap-3">
               <div>
@@ -84,7 +92,11 @@
           <div class="relative z-10 h-[28rem] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h3 id="city-search-heading" class="text-lg font-bold">Search cities</h3>
-              <button type="button" class="rounded-lg px-2 py-1 text-sm font-bold text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="click->world-clock#closeSearch">Close</button>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="click->world-clock#closeSearch">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+                  <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
             <label for="city-search-input" class="mt-5 block text-sm font-bold">City or country</label>
             <input id="city-search-input" type="search" autocomplete="off" placeholder="Tokyo or Canada" data-world-clock-target="searchInput" data-action="input->world-clock#search" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200">
