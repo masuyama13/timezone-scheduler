@@ -4,12 +4,14 @@ import { CITY_CATALOG } from "city_catalog"
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["modal", "date", "time", "status", "previews"]
+  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list"]
   static values = { url: String }
 
   connect() {
+    this.candidates = []
     this.boundInstantSelected = (event) => this.openForInstant(event.detail.instant)
     window.addEventListener("world-clock:instant-selected", this.boundInstantSelected)
+    this.renderCandidates()
   }
 
   disconnect() {
@@ -88,11 +90,13 @@ export default class extends Controller {
   }
 
   chooseOccurrence(event) {
+    this.selectedInstant = event.currentTarget.dataset.instant
     this.renderPreviews(event.currentTarget.dataset.instant)
     this.statusTarget.textContent = ""
   }
 
   renderPreviews(instant) {
+    this.selectedInstant = instant
     this.previewsTarget.replaceChildren()
     this.cities().forEach((city) => {
       const row = document.createElement("div")
@@ -105,6 +109,79 @@ export default class extends Controller {
       row.append(name, time)
       this.previewsTarget.append(row)
     })
+
+    const alreadySelected = this.candidates.some((candidate) => candidate.instant === instant)
+    const add = document.createElement("button")
+    add.type = "button"
+    add.className = "mt-3 w-full rounded-lg bg-blue-700 px-3 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+    add.textContent = alreadySelected ? "Already selected" : "Add this time"
+    add.disabled = alreadySelected || this.candidates.length >= 10
+    add.dataset.action = "click->candidate-times#addCandidate"
+    this.previewsTarget.append(add)
+  }
+
+  addCandidate() {
+    if (!this.selectedInstant) return
+    if (this.candidates.some((candidate) => candidate.instant === this.selectedInstant)) {
+      this.statusTarget.textContent = "This time is already selected."
+      return
+    }
+    if (this.candidates.length >= 10) {
+      this.statusTarget.textContent = "You can select up to 10 times."
+      return
+    }
+
+    this.candidates.push({ instant: this.selectedInstant })
+    this.candidates.sort((a, b) => new Date(a.instant) - new Date(b.instant))
+    this.renderCandidates()
+    this.renderPreviews(this.selectedInstant)
+  }
+
+  removeCandidate(event) {
+    this.candidates = this.candidates.filter((candidate) => candidate.instant !== event.currentTarget.dataset.instant)
+    this.renderCandidates()
+    if (this.selectedInstant) this.renderPreviews(this.selectedInstant)
+  }
+
+  renderCandidates() {
+    this.summaryTarget.hidden = this.candidates.length === 0
+    this.countTarget.textContent = `${this.candidates.length} of 10 times selected`
+    this.listTarget.replaceChildren()
+    this.candidates.forEach((candidate, index) => {
+      const row = document.createElement("div")
+      row.className = "flex items-center justify-start gap-3 border-b border-slate-100 py-2 last:border-b-0"
+      const label = document.createElement("span")
+      label.className = "w-44 shrink-0 whitespace-nowrap text-sm text-slate-700"
+      label.textContent = this.format(candidate.instant, this.primaryCity().timeZone)
+      const remove = document.createElement("button")
+      remove.type = "button"
+      remove.className = "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-500"
+      remove.dataset.instant = candidate.instant
+      remove.dataset.action = "click->candidate-times#removeCandidate"
+      remove.setAttribute("aria-label", `Remove selected time ${index + 1}`)
+      remove.append(this.icon("trash"))
+      row.append(label, remove)
+      this.listTarget.append(row)
+    })
+  }
+
+  icon(name) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    svg.setAttribute("viewBox", "0 0 24 24")
+    svg.setAttribute("fill", "none")
+    svg.setAttribute("stroke", "currentColor")
+    svg.setAttribute("stroke-width", "1.8")
+    svg.setAttribute("aria-hidden", "true")
+    svg.classList.add("h-4", "w-4")
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+    path.setAttribute("stroke-linecap", "round")
+    path.setAttribute("stroke-linejoin", "round")
+    path.setAttribute("d", name === "trash"
+      ? "m6 7.5 1 12h10l1-12M4.5 7.5h15M9.5 7.5V5h5v2.5M10 11v5M14 11v5"
+      : "")
+    svg.append(path)
+    return svg
   }
 
   primaryCity() { return this.cities().find((city) => city.primary) || this.cities()[0] }
