@@ -14,7 +14,7 @@ RSpec.describe "Events", type: :request do
     }
   end
 
-  it "creates a schedule and sets a management cookie" do
+  it "creates an event and sets a management cookie" do
     expect {
       post events_path, params: params
     }.to change(Event, :count).by(1).and change(EventCity, :count).by(2).and change(TimeOption, :count).by(2)
@@ -24,7 +24,7 @@ RSpec.describe "Events", type: :request do
     expect(response.cookies.keys).to include("event_management_#{Event.last.public_token}")
   end
 
-  it "returns validation errors without persisting a schedule" do
+  it "returns validation errors without persisting an event" do
     expect {
       post events_path, params: params.merge(name: "")
     }.not_to change(Event, :count)
@@ -34,7 +34,7 @@ RSpec.describe "Events", type: :request do
   end
 
   describe "GET /events/:public_token" do
-    it "renders the saved schedule and share link" do
+    it "renders the saved event and share link" do
       post events_path, params: params
       event = Event.last
 
@@ -55,7 +55,7 @@ RSpec.describe "Events", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
-    it "deletes a schedule with the management cookie" do
+    it "deletes an event with the management cookie" do
       post events_path, params: params
       event = Event.last
 
@@ -79,5 +79,4 @@ RSpec.describe "Events", type: :request do
       expect(Event.exists?(event.id)).to be(true)
     end
   end
-
 end

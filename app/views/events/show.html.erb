@@ -17,7 +17,7 @@
     </section>
 
     <section class="grid gap-3" aria-labelledby="share-link-heading">
-      <h2 id="share-link-heading" class="text-lg font-bold">Share this schedule</h2>
+      <h2 id="share-link-heading" class="text-lg font-bold">Share this event</h2>
       <div class="flex flex-col gap-2 sm:flex-row">
         <input data-share-link-target="url" type="text" readonly value="<%= share_url %>" class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-600">
         <button type="button" data-action="click->share-link#copy" class="shrink-0 rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800">Copy link</button>
@@ -45,9 +45,9 @@
 
     <% if management_authorized?(@event) %>
       <section class="grid gap-3 border-t border-slate-200 pt-6" aria-labelledby="delete-event-heading">
-        <h2 id="delete-event-heading" class="text-lg font-bold">Delete schedule</h2>
+        <h2 id="delete-event-heading" class="text-lg font-bold">Delete event</h2>
         <p class="text-sm text-slate-600">This will permanently delete this page, all time options, responses, and comments.</p>
-        <%= button_to "Delete schedule", event_path(@event.public_token), method: :delete, data: { turbo_confirm: "Delete #{@event.name}? This will permanently delete the schedule and all responses." }, authenticity_token: false, class: "w-fit rounded-lg bg-red-700 px-4 py-2 text-sm font-bold text-white hover:bg-red-800" %>
+        <%= button_to "Delete event", event_path(@event.public_token), method: :delete, data: { turbo_confirm: "Delete #{@event.name}? This will permanently delete the event and all responses." }, authenticity_token: false, class: "w-fit rounded-lg bg-red-700 px-4 py-2 text-sm font-bold text-white hover:bg-red-800" %>
       </section>
     <% end %>
   </main>

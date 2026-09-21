@@ -17,7 +17,7 @@ require "rails_helper"
 #  index_events_on_public_token  (public_token) UNIQUE
 #
 RSpec.describe Event, type: :model do
-  it "owns its snapshots and related schedule records" do
+  it "owns its snapshots and related event records" do
     expect(described_class.reflect_on_association(:event_cities).options[:dependent]).to eq(:destroy)
     expect(described_class.reflect_on_association(:time_options).options[:dependent]).to eq(:destroy)
     expect(described_class.reflect_on_association(:responses).options[:dependent]).to eq(:destroy)

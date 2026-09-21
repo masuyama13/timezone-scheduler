@@ -19,7 +19,7 @@ RSpec.describe "Shared event", type: :system do
     visit event_path(event.public_token)
   end
 
-  it "shows the saved schedule and its share link" do
+  it "shows the saved event and its share link" do
     expect(page).to have_text("Planning session")
     expect(page).to have_text("Choose a time")
     expect(page).to have_text("Vancouver")

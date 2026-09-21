@@ -176,12 +176,12 @@ RSpec.describe "World Clock", type: :system do
     first("[data-instant]").click
     click_button "Add this time"
     click_button "Close"
-    click_button "Plan a meeting"
+    click_button "Plan an event"
 
     expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
-    expect(page).to have_text("Plan a meeting")
+    expect(page).to have_text("Plan an event")
     expect(page).to have_text("Time options")
-    expect(page).to have_text("By creating this schedule, you agree to the Terms of Service.")
+    expect(page).to have_text("By creating this event, you agree to the Terms of Service.")
     expect(page).to have_field("Description", with: "")
     expect(page).to have_css('[aria-labelledby="review-times-heading"] .max-w-lg')
     expect(page).to have_css('#event-description[rows="2"]')
@@ -206,7 +206,7 @@ RSpec.describe "World Clock", type: :system do
     all("[data-instant]")[1].click
     click_button "Add this time"
     click_button "Close"
-    click_button "Plan a meeting"
+    click_button "Plan an event"
 
     expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
     expect(page).not_to have_css('[aria-labelledby="candidate-time-heading"]', visible: true)
@@ -218,7 +218,7 @@ RSpec.describe "World Clock", type: :system do
     first("[data-instant]").click
     click_button "Add this time"
     click_button "Close"
-    click_button "Plan a meeting"
+    click_button "Plan an event"
 
     fill_in "Title", with: "Team sync"
     fill_in "Description", with: "Choose a time together"
@@ -229,10 +229,10 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_text("Choose a time together")
     expect(page).to have_button("Copy link")
     expect(page).to have_text("Option 1")
-    expect(page).to have_button("Delete schedule")
+    expect(page).to have_button("Delete event")
 
     accept_confirm do
-      click_button "Delete schedule"
+      click_button "Delete event"
     end
     expect(page).to have_current_path(root_path)
   end

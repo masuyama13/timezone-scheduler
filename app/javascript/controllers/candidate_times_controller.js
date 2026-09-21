@@ -121,7 +121,7 @@ export default class extends Controller {
 
   async planMeeting() {
     if (this.candidates.length < 1) {
-      this.planStatusTarget.textContent = "Select at least one time option before planning a meeting."
+      this.planStatusTarget.textContent = "Select at least one time option before planning an event."
       return
     }
 
