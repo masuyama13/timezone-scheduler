@@ -83,7 +83,7 @@ export default class extends Controller {
       this.instants = data.instants.map((value) => new Date(value))
       this.loadedKey = key
       this.mobileHourOffset = 0
-      this.statusTarget.textContent = this.instants.length ? "" : "This date does not exist in the selected timezone."
+      this.statusTarget.textContent = this.instants.length ? "" : "There are no local times on this date in the selected timezone."
       this.render()
     } catch (error) {
       if (request.signal.aborted) return
@@ -140,6 +140,11 @@ export default class extends Controller {
     const columns = `${cityColumn} repeat(${hours}, minmax(0, 1fr))`
     const table = document.createElement("div")
     table.className = "w-full"
+    table.addEventListener("mouseover", (event) => {
+      const cell = event.target.closest("[data-hour-index]")
+      if (cell && table.contains(cell)) this.highlightColumn(table, cell.dataset.hourIndex)
+    })
+    table.addEventListener("mouseleave", () => this.clearColumnHighlight(table))
 
     this.cities.forEach((city) => {
       const row = document.createElement("div")
@@ -155,8 +160,10 @@ export default class extends Controller {
       visibleInstants.forEach((instant) => {
         const date = this.localDate(instant, city.timeZone)
         const time = this.formatTime(instant, city.timeZone, true)
-        const cell = this.cell(time, "min-w-0 bg-white px-0.5 py-4 text-center text-[0.65rem] text-slate-600")
+        const cell = this.cell(time, "min-w-0 cursor-pointer bg-white px-0.5 py-4 text-center text-[0.65rem] text-slate-600")
         cell.dataset.instant = instant.toISOString()
+        cell.dataset.hourIndex = visibleInstants.indexOf(instant).toString()
+        cell.dataset.action = "click->time-grid#selectInstant"
         cell.setAttribute("aria-label", `${city.name}, ${date}, ${this.formatTime(instant, city.timeZone)}, ${this.offsetLabel(instant, city.timeZone)}`)
         if (date !== previousDate) {
           cell.append(this.cell(this.formatDate(instant, city.timeZone), "block text-[0.55rem] text-slate-500"))
@@ -175,6 +182,28 @@ export default class extends Controller {
     viewport.className = "max-w-full overflow-x-auto rounded-xl border border-slate-200 bg-slate-200"
     viewport.append(table)
     this.gridTarget.append(viewport)
+  }
+
+  highlightColumn(table, hourIndex) {
+    if (this.hoveredTable === table && this.hoveredHourIndex === hourIndex) return
+    this.clearColumnHighlight(table)
+    table.querySelectorAll(`[data-hour-index="${hourIndex}"]`).forEach((cell) => {
+      cell.classList.add("bg-blue-50")
+      cell.style.backgroundColor = "var(--color-blue-50)"
+    })
+    this.hoveredTable = table
+    this.hoveredHourIndex = hourIndex
+  }
+
+  clearColumnHighlight(table) {
+    table.querySelectorAll("[data-hour-index]").forEach((cell) => {
+      cell.classList.remove("bg-blue-50")
+      cell.style.removeProperty("background-color")
+    })
+    if (this.hoveredTable === table) {
+      this.hoveredTable = null
+      this.hoveredHourIndex = null
+    }
   }
 
   renderNavigation(mobile) {
@@ -211,6 +240,12 @@ export default class extends Controller {
   nextPage() {
     this.mobileHourOffset = Math.min(Math.floor((this.instants.length - 1) / 12) * 12, this.mobileHourOffset + 12)
     this.render()
+  }
+
+  selectInstant(event) {
+    window.dispatchEvent(new CustomEvent("world-clock:instant-selected", {
+      detail: { instant: event.currentTarget.dataset.instant }
+    }))
   }
 
   cityHeader(city) {
