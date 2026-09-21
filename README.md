@@ -1,6 +1,6 @@
 # Timezone Scheduler
 
-A Rails application for coordinating schedules across time zones.
+A Rails application for coordinating events across time zones.
 
 ## Prerequisites
 

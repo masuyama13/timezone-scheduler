@@ -15,4 +15,7 @@
 #  index_events_on_public_token  (public_token) UNIQUE
 #
 class Event < ApplicationRecord
+  has_many :event_cities, dependent: :destroy
+  has_many :time_options, dependent: :destroy
+  has_many :responses, dependent: :destroy
 end
