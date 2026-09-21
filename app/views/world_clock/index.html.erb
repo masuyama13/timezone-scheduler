@@ -1,6 +1,6 @@
 <% content_for :title, "World Clock | Timezone Scheduler" %>
 
-<div class="min-h-screen bg-slate-50 text-slate-900" data-controller="world-clock time-grid candidate-times" data-time-grid-url-value="<%= world_clock_timeline_path %>" data-candidate-times-url-value="<%= world_clock_time_resolution_path %>">
+<div class="min-h-screen bg-slate-50 text-slate-900" data-controller="world-clock time-grid candidate-times" data-time-grid-url-value="<%= world_clock_timeline_path %>" data-candidate-times-url-value="<%= world_clock_time_resolution_path %>" data-candidate-times-review-url-value="<%= world_clock_candidate_review_path %>">
   <header class="border-b border-slate-200 bg-slate-50">
     <div class="mx-auto flex h-12 max-w-4xl items-center px-4 sm:px-6">
       <h1 class="text-base font-bold tracking-tight sm:text-lg">Timezone Scheduler</h1>
@@ -50,6 +50,8 @@
               <button type="button" class="rounded-lg px-2 py-1 text-sm font-bold text-blue-700 hover:bg-blue-50" data-action="click->candidate-times#closeReview">Close</button>
             </div>
             <div data-candidate-times-target="reviewList" class="mt-4 grid gap-4"></div>
+            <p data-candidate-times-target="reviewStatus" role="status" class="mt-3 text-sm text-amber-700"></p>
+            <button type="button" data-candidate-times-target="validateButton" data-action="click->candidate-times#validateCandidates" class="mt-4 w-full rounded-lg bg-blue-700 px-3 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500">Validate candidates</button>
           </div>
         </div>
       </div>

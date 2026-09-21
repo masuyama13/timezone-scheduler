@@ -190,6 +190,21 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_text("Tokyo")
   end
 
+  it "validates selected times from the review modal" do
+    select_date((Date.current + 2).iso8601)
+    expect(page).to have_text("12 AM")
+    first("[data-instant]").click
+    click_button "Add this time"
+    click_button "Close"
+    all("[data-instant]")[1].click
+    click_button "Add this time"
+    click_button "Close"
+    click_button "Review selected times"
+    click_button "Validate candidates"
+
+    expect(page).to have_text("Candidate times are valid and ready for event details.")
+  end
+
   private
 
   def select_date(value)
