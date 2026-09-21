@@ -16,6 +16,6 @@ RSpec.describe "World Clock candidate reviews", type: :request do
     post world_clock_candidate_review_path, params: { instants: [ 1.hour.ago.iso8601 ] }
 
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.parsed_body.fetch("errors")).to include("Instants must be in the future")
+    expect(response.parsed_body.fetch("errors")).to include("Select times in the future.")
   end
 end
