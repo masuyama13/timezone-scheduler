@@ -32,4 +32,28 @@ RSpec.describe "Events", type: :request do
     expect(response).to have_http_status(:unprocessable_content)
     expect(response.parsed_body.fetch("errors")).to include("Title is required.")
   end
+
+  describe "GET /events/:public_token" do
+    it "renders the saved schedule and share link" do
+      post events_path, params: params
+      event = Event.last
+
+      get event_path(event.public_token)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Planning session")
+      expect(response.body).to include("Choose a time")
+      expect(response.body).to include("Vancouver")
+      expect(response.body).to include("Tokyo")
+      expect(response.body).to include(event_path(event.public_token))
+      expect(response.body).to include("This page and its responses may be deleted after one year.")
+    end
+
+    it "returns not found for an unknown public token" do
+      get event_path("missing-event")
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
 end

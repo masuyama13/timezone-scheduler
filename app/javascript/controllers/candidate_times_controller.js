@@ -108,13 +108,7 @@ export default class extends Controller {
       }
       if (!response.ok) throw new Error(data.errors?.join(" ") || "Could not create the event. Please try again.")
 
-      this.createFormTarget.hidden = true
-      this.createStatusTarget.textContent = "Event created. Share this link:"
-      const link = document.createElement("a")
-      link.className = "mt-2 block break-all text-sm font-bold text-blue-700 underline"
-      link.href = `/events/${data.public_token}`
-      link.textContent = new URL(link.href, window.location.origin).toString()
-      this.createResultTarget.append(link)
+      window.location.assign(`/events/${data.public_token}`)
     } catch (error) {
       this.createButtonTarget.disabled = false
       this.createStatusTarget.textContent = error.message

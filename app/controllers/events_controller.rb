@@ -22,6 +22,10 @@ class EventsController < ApplicationController
     render json: { errors: error.errors }, status: :unprocessable_content
   end
 
+  def show
+    @event = Event.includes(:event_cities, :time_options).find_by!(public_token: params[:public_token])
+  end
+
   private
 
   def event_params

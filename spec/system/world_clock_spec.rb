@@ -224,11 +224,11 @@ RSpec.describe "World Clock", type: :system do
     fill_in "Description", with: "Choose a time together"
     click_button "Create"
 
-    expect(page).to have_text("Event created. Share this link:")
-    expect(page).to have_css("a[href^='/events/']")
-    expect(Event.last.name).to eq("Team sync")
-    expect(Event.last.description).to eq("Choose a time together")
-    expect(Event.last.time_options.count).to eq(1)
+    expect(page).to have_current_path(%r{\A/events/[^/]+\z})
+    expect(page).to have_text("Team sync")
+    expect(page).to have_text("Choose a time together")
+    expect(page).to have_button("Copy link")
+    expect(page).to have_text("Option 1")
   end
 
   private
