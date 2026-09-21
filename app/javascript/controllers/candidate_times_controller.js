@@ -4,7 +4,7 @@ import { CITY_CATALOG } from "city_catalog"
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewButton", "reviewModal", "reviewList", "planStatus"]
+  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewModal", "reviewList", "planStatus"]
   static values = { url: String, reviewUrl: String }
 
   connect() {
@@ -205,8 +205,6 @@ export default class extends Controller {
   renderCandidates() {
     this.summaryTarget.hidden = this.candidates.length === 0
     this.countTarget.textContent = `${this.candidates.length} of 10 times selected`
-    this.reviewButtonTarget.hidden = this.candidates.length < 2
-    this.reviewButtonTarget.disabled = this.candidates.length < 2
     this.listTarget.replaceChildren()
     this.candidates.forEach((candidate, index) => {
       const row = document.createElement("div")

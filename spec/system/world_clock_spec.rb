@@ -171,20 +171,18 @@ RSpec.describe "World Clock", type: :system do
   end
 
   it "reviews selected times after choosing at least two" do
-    expect(page).not_to have_button("Review selected times")
-
+    select_date((Date.current + 2).iso8601)
+    expect(page).to have_text("12 AM")
     first("[data-instant]").click
     click_button "Add this time"
     click_button "Close"
-    expect(page).not_to have_button("Review selected times")
     click_button "Plan a meeting"
     expect(page).to have_text("Select at least two time options before planning a meeting.")
 
     all("[data-instant]")[1].click
     click_button "Add this time"
     click_button "Close"
-    expect(page).to have_button("Review selected times", disabled: false)
-    click_button "Review selected times"
+    click_button "Plan a meeting"
 
     expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
     expect(page).to have_text("1.")
