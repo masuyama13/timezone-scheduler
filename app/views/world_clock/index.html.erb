@@ -1,6 +1,6 @@
 <% content_for :title, "World Clock | Timezone Scheduler" %>
 
-<div class="min-h-screen bg-slate-50 text-slate-900" data-controller="world-clock time-grid candidate-times" data-time-grid-url-value="<%= world_clock_timeline_path %>" data-candidate-times-url-value="<%= world_clock_time_resolution_path %>">
+<div class="min-h-screen bg-slate-50 text-slate-900" data-controller="world-clock time-grid candidate-times" data-time-grid-url-value="<%= world_clock_timeline_path %>" data-candidate-times-url-value="<%= world_clock_time_resolution_path %>" data-candidate-times-review-url-value="<%= world_clock_candidate_review_path %>">
   <header class="border-b border-slate-200 bg-slate-50">
     <div class="mx-auto flex h-12 max-w-4xl items-center px-4 sm:px-6">
       <h1 class="text-base font-bold tracking-tight sm:text-lg">Timezone Scheduler</h1>
@@ -28,9 +28,10 @@
       <div class="mb-3 flex items-center justify-between gap-2" data-time-grid-target="navigation" hidden></div>
       <div class="mt-4" data-time-grid-target="grid" aria-live="polite"></div>
 
-      <div class="mt-4 flex justify-end">
-        <button type="button" class="rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800" data-action="click->candidate-times#open">Plan a meeting</button>
+      <div class="mt-4 flex items-center justify-between gap-3">
+        <button type="button" class="ml-auto rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800" data-action="click->candidate-times#planMeeting">Plan a meeting</button>
       </div>
+      <p data-candidate-times-target="planStatus" role="status" class="mt-2 text-sm text-amber-700"></p>
 
       <div class="mt-4 rounded-xl border border-slate-200 bg-white p-4" data-candidate-times-target="summary" hidden>
         <div class="flex items-center justify-between gap-3">
@@ -38,6 +39,19 @@
           <span class="text-xs text-slate-500" data-candidate-times-target="count">0 of 10 times selected</span>
         </div>
         <div class="mt-2 grid gap-2" data-candidate-times-target="list"></div>
+      </div>
+
+      <div data-candidate-times-target="reviewModal" role="dialog" aria-modal="true" aria-labelledby="review-times-heading" hidden>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-slate-950/50" data-action="click->candidate-times#closeReview"></div>
+          <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
+            <div class="flex items-center justify-between gap-4">
+              <h3 id="review-times-heading" class="text-lg font-bold">Review selected times</h3>
+              <button type="button" class="rounded-lg px-2 py-1 text-sm font-bold text-blue-700 hover:bg-blue-50" data-action="click->candidate-times#closeReview">Close</button>
+            </div>
+            <div data-candidate-times-target="reviewList" class="mt-4 grid gap-4"></div>
+          </div>
+        </div>
       </div>
 
       <div data-candidate-times-target="modal" role="dialog" aria-modal="true" aria-labelledby="candidate-time-heading" hidden>

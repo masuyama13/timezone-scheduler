@@ -4,8 +4,8 @@ import { CITY_CATALOG } from "city_catalog"
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list"]
-  static values = { url: String }
+  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewModal", "reviewList", "planStatus"]
+  static values = { url: String, reviewUrl: String }
 
   connect() {
     this.candidates = []
@@ -48,6 +48,61 @@ export default class extends Controller {
   close() {
     this.request?.abort()
     this.modalTarget.hidden = true
+  }
+
+  review() {
+    if (this.candidates.length < 2) return
+
+    this.reviewListTarget.replaceChildren()
+    this.candidates.forEach((candidate, index) => {
+      const section = document.createElement("section")
+      section.className = "border-b border-slate-100 pb-3 last:border-b-0 last:pb-0"
+      const heading = document.createElement("h4")
+      heading.className = "text-sm font-bold text-slate-700"
+      heading.textContent = `${index + 1}. ${this.format(candidate.instant, this.primaryCity().timeZone)}`
+      section.append(heading)
+      this.appendCityPreviews(section, candidate.instant)
+      this.reviewListTarget.append(section)
+    })
+    this.reviewModalTarget.hidden = false
+  }
+
+  closeReview() {
+    this.reviewModalTarget.hidden = true
+  }
+
+  async planMeeting() {
+    if (this.candidates.length < 2) {
+      this.planStatusTarget.textContent = "Select at least two time options before planning a meeting."
+      return
+    }
+
+    this.planStatusTarget.textContent = ""
+    if (await this.validateCandidates()) this.review()
+  }
+
+  async validateCandidates() {
+    try {
+      const body = new URLSearchParams()
+      this.candidates.forEach((candidate) => body.append("instants[]", candidate.instant))
+      const response = await fetch(this.reviewUrlValue, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body
+      })
+      const responseText = await response.text()
+      let data = {}
+      try {
+        data = JSON.parse(responseText)
+      } catch (_error) {
+        data = {}
+      }
+      if (!response.ok) throw new Error(data.errors?.join(" ") || "Candidate validation failed. Please try again.")
+      return true
+    } catch (error) {
+      this.planStatusTarget.textContent = error.message
+      return false
+    }
   }
 
   async preview() {
@@ -98,17 +153,7 @@ export default class extends Controller {
   renderPreviews(instant) {
     this.selectedInstant = instant
     this.previewsTarget.replaceChildren()
-    this.cities().forEach((city) => {
-      const row = document.createElement("div")
-      row.className = "flex items-baseline justify-between gap-3 border-b border-slate-100 py-2 last:border-b-0"
-      const name = document.createElement("strong")
-      name.textContent = city.name
-      const time = document.createElement("span")
-      time.className = "text-right text-sm text-slate-600"
-      time.textContent = this.format(instant, city.timeZone)
-      row.append(name, time)
-      this.previewsTarget.append(row)
-    })
+    this.appendCityPreviews(this.previewsTarget, instant)
 
     const alreadySelected = this.candidates.some((candidate) => candidate.instant === instant)
     const add = document.createElement("button")
@@ -118,6 +163,20 @@ export default class extends Controller {
     add.disabled = alreadySelected || this.candidates.length >= 10
     add.dataset.action = "click->candidate-times#addCandidate"
     this.previewsTarget.append(add)
+  }
+
+  appendCityPreviews(container, instant) {
+    this.cities().forEach((city) => {
+      const row = document.createElement("div")
+      row.className = "flex items-baseline justify-between gap-3 border-b border-slate-100 py-2 last:border-b-0"
+      const name = document.createElement("strong")
+      name.textContent = city.name
+      const time = document.createElement("span")
+      time.className = "text-right text-sm text-slate-600"
+      time.textContent = this.format(instant, city.timeZone)
+      row.append(name, time)
+      container.append(row)
+    })
   }
 
   addCandidate() {
