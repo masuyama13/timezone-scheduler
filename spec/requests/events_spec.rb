@@ -53,6 +53,8 @@ RSpec.describe "Events", type: :request do
       get event_path("missing-event")
 
       expect(response).to have_http_status(:not_found)
+      expect(response.body).to include("Page not found")
+      expect(response.body).to include("Back to home")
     end
 
     it "deletes an event with the management cookie" do
@@ -77,6 +79,12 @@ RSpec.describe "Events", type: :request do
 
       expect(response).to have_http_status(:forbidden)
       expect(Event.exists?(event.id)).to be(true)
+    end
+
+    it "returns not found when deleting an unknown event" do
+      delete event_path("missing-event")
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 end

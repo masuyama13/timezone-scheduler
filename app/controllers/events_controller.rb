@@ -23,11 +23,14 @@ class EventsController < ApplicationController
   end
 
   def show
-    @event = Event.includes(:event_cities, :time_options).find_by!(public_token: params[:public_token])
+    @event = Event.includes(:event_cities, :time_options).find_by(public_token: params[:public_token])
+    render_not_found unless @event
   end
 
   def destroy
-    event = Event.find_by!(public_token: params[:public_token])
+    event = Event.find_by(public_token: params[:public_token])
+    return render_not_found unless event
+
     Events::Destroy.new(
       event: event,
       management_token: cookies[management_cookie_key(event)]
