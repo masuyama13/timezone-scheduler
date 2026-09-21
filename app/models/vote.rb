@@ -3,7 +3,7 @@
 # Table name: votes
 #
 #  id             :bigint           not null, primary key
-#  available      :boolean          not null
+#  availability   :integer          not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  response_id    :bigint           not null
@@ -22,4 +22,6 @@
 class Vote < ApplicationRecord
   belongs_to :response
   belongs_to :time_option
+
+  enum :availability, { unavailable: 0, available: 1, maybe: 2 }, validate: true
 end
