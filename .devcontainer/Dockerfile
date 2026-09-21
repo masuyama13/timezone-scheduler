@@ -2,6 +2,13 @@
 ARG RUBY_VERSION=4.0.3
 FROM ghcr.io/rails/devcontainer/images/ruby:$RUBY_VERSION
 
+USER root
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends chromium chromium-driver \
+  && rm -rf /var/lib/apt/lists/*
+
+USER vscode
+
 # Ensure binding is always 0.0.0.0
 # Binds the server to all IP addresses of the container, so it can be accessed from outside the container.
 ENV BINDING="0.0.0.0"

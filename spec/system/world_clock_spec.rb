@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "World Clock", type: :system do
   before do
-    driven_by :selenium, using: :headless_chrome, screen_size: [ 1280, 900 ]
+    driven_by :selenium_chromium, screen_size: [ 1280, 900 ]
     visit root_path
     page.execute_script("window.localStorage.setItem('timezone-scheduler.world-clock', JSON.stringify([{ key: 'tokyo', primary: true }])); window.location.reload()")
   end
