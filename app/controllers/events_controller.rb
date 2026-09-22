@@ -24,7 +24,9 @@ class EventsController < ApplicationController
 
   def show
     @event = Event.includes(:event_cities, :time_options).find_by(public_token: params[:public_token])
-    render_not_found unless @event
+    return render_not_found unless @event
+
+    @responses = @event.responses.includes(:votes).order(:created_at)
   end
 
   def destroy

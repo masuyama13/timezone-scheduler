@@ -5,7 +5,7 @@ require 'rails_helper'
 # Table name: votes
 #
 #  id             :bigint           not null, primary key
-#  available      :boolean          not null
+#  availability   :integer          not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  response_id    :bigint           not null
@@ -22,5 +22,18 @@ require 'rails_helper'
 #  fk_rails_...  (time_option_id => time_options.id)
 #
 RSpec.describe Vote, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "supports the three availability states" do
+    expect(described_class.availabilities).to eq(
+      "unavailable" => 0,
+      "available" => 1,
+      "maybe" => 2
+    )
+  end
+
+  it "rejects an unknown availability state" do
+    vote = described_class.new(availability: "unknown")
+
+    expect(vote).not_to be_valid
+    expect(vote.errors[:availability]).to include("is not included in the list")
+  end
 end

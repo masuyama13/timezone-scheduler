@@ -3,7 +3,7 @@
 # Table name: votes
 #
 #  id             :bigint           not null, primary key
-#  available      :boolean          not null
+#  availability   :integer          not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  response_id    :bigint           not null
@@ -23,6 +23,6 @@ FactoryBot.define do
   factory :vote do
     response { nil }
     time_option { nil }
-    available { false }
+    availability { :unavailable }
   end
 end

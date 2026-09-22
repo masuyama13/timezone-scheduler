@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   get "world_clock/time_resolution", to: "world_clock/time_resolutions#show", as: :world_clock_time_resolution
   post "world_clock/candidate_review", to: "world_clock/candidate_reviews#create", as: :world_clock_candidate_review
   resources :events, param: :public_token, only: [ :create, :show, :destroy ]
+  post "events/:public_token/responses", to: "events/responses#create", as: :event_responses
 
   root "world_clock#index"
 end

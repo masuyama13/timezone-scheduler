@@ -20,7 +20,7 @@ RSpec.describe Events::Destroy do
   it "deletes the event and all related records with the management token" do
     event = result.event
     response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver")
-    event.time_options.first.votes.create!(response: response, available: true)
+    event.time_options.first.votes.create!(response: response, availability: :available)
 
     expect {
       described_class.new(event: event, management_token: result.management_token).call
