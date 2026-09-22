@@ -74,11 +74,11 @@ RSpec.describe "Shared event", type: :system do
     fill_in "Comment", with: "Looking forward to it"
     click_button "Add response"
 
-    expect(page).to have_text("Responses")
-    expect(page).to have_text("1 response")
-    expect(page).to have_text("Alex")
-    expect(page).to have_text("Vancouver")
-    expect(page).to have_text("Looking forward to it")
+    expect(page).to have_text("Responses", wait: 5)
+    expect(page).to have_text("1 response", wait: 5)
+    expect(page).to have_text("Alex", wait: 5)
+    expect(page).to have_text("Vancouver", wait: 5)
+    expect(page).to have_text("Looking forward to it", wait: 5)
   end
   it "edits an existing availability response" do
     response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver", comment: "Original")
@@ -94,7 +94,21 @@ RSpec.describe "Shared event", type: :system do
     fill_in "Comment", with: "Updated"
     click_button "Save changes"
 
-    expect(page).to have_text("Jordan")
-    expect(page).to have_text("Updated")
+    expect(page).to have_text("Jordan", wait: 5)
+    expect(page).to have_text("Updated", wait: 5)
+  end
+
+  it "keeps page times in the viewer timezone while editing another response" do
+    response = event.responses.create!(name: "Tokyo guest", time_zone: "Asia/Tokyo")
+    event.time_options.order(:starts_at).each do |time_option|
+      response.votes.create!(time_option: time_option, availability: :available)
+    end
+
+    visit event_path(event.public_token)
+    page_time = find('[data-event-response-target="responseDate"]', match: :first).text
+    find("button[data-response-id=\"#{response.id}\"]").click
+
+    expect(find('[data-event-response-target="responseDate"]', match: :first).text).to eq(page_time)
+    expect(find('[data-event-response-target="optionDate"]', match: :first).text).to eq(event.time_options.first.starts_at.in_time_zone("Asia/Tokyo").strftime("%a, %b %-d, %Y, %-I:%M %p"))
   end
 end

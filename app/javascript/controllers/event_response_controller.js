@@ -3,7 +3,7 @@ import { CITY_CATALOG } from "city_catalog"
 
 export default class extends Controller {
   static targets = [
-    "form", "name", "timeZone", "timeZoneButton", "timeZoneLabel", "displayTimeZone",
+    "form", "name", "timeZone", "timeZoneButton", "timeZoneLabel", "formTimeZoneLabel",
     "timeZoneDialog", "timeZoneSearch", "timeZoneResults", "responseDate", "optionDate",
     "comment", "submit", "submitLabel", "status", "responseDialog", "modalTitle"
   ]
@@ -11,6 +11,7 @@ export default class extends Controller {
 
   connect() {
     this.editingResponseId = null
+    this.formTimeZone = null
     this.populateTimeZones()
   }
 
@@ -38,6 +39,7 @@ export default class extends Controller {
         : CITY_CATALOG[0]?.timeZone
 
     if (selectedTimeZone) this.timeZoneTarget.value = selectedTimeZone
+    this.formTimeZone = selectedTimeZone
     this.updateTimeZoneLabel()
     this.updateDisplayedTimes()
     this.renderTimeZoneResults()
@@ -61,7 +63,9 @@ export default class extends Controller {
 
   selectTimeZone(event) {
     this.timeZoneTarget.value = event.currentTarget.dataset.timeZone
+    if (!this.editingResponseId) this.formTimeZone = this.timeZoneTarget.value
     this.updateTimeZoneLabel()
+    this.updateFormTimeZoneLabel()
     this.updateDisplayedTimes()
     this.closeTimeZoneSearch()
   }
@@ -69,6 +73,9 @@ export default class extends Controller {
   openCreate() {
     this.editingResponseId = null
     this.resetResponseForm()
+    this.formTimeZone = this.timeZoneTarget.value
+    this.updateFormTimeZoneLabel()
+    this.updateDisplayedTimes()
     this.modalTitleTarget.textContent = "Add your availability"
     this.submitLabelTarget.textContent = "Add response"
     this.responseDialogTarget.hidden = false
@@ -80,8 +87,8 @@ export default class extends Controller {
     this.editingResponseId = button.dataset.responseId
     this.nameTarget.value = button.dataset.responseName || ""
     this.commentTarget.value = button.dataset.responseComment || ""
-    if (button.dataset.responseTimeZone) this.timeZoneTarget.value = button.dataset.responseTimeZone
-    this.updateTimeZoneLabel()
+    this.formTimeZone = button.dataset.responseTimeZone || this.timeZoneTarget.value
+    this.updateFormTimeZoneLabel()
     this.updateDisplayedTimes()
 
     this.formTarget.querySelectorAll('input[type="radio"]').forEach((input) => { input.checked = false })
@@ -115,8 +122,9 @@ export default class extends Controller {
     this.responseDateTargets.forEach((element) => {
       element.textContent = this.formatDate(element.dataset.instant, timeZone)
     })
+    const formTimeZone = this.formTimeZone || timeZone
     this.optionDateTargets.forEach((element) => {
-      element.textContent = this.formatOptionDate(element.dataset.instant, timeZone)
+      element.textContent = this.formatOptionDate(element.dataset.instant, formTimeZone)
     })
   }
 
@@ -132,7 +140,12 @@ export default class extends Controller {
     const city = CITY_CATALOG.find((item) => item.timeZone === this.timeZoneTarget.value)
     const label = city ? `${city.name} (${city.timeZone})` : this.timeZoneTarget.value
     this.timeZoneLabelTarget.textContent = label
-    this.displayTimeZoneTarget.textContent = label
+  }
+
+  updateFormTimeZoneLabel() {
+    const city = CITY_CATALOG.find((item) => item.timeZone === this.formTimeZone)
+    const label = city ? `${city.name} (${city.timeZone})` : this.formTimeZone
+    this.formTimeZoneLabelTarget.textContent = label
   }
 
   renderTimeZoneResults() {
@@ -178,7 +191,7 @@ export default class extends Controller {
 
     const body = JSON.stringify({
       name: this.nameTarget.value,
-      time_zone: this.timeZoneTarget.value,
+      time_zone: this.formTimeZone || this.timeZoneTarget.value,
       comment: this.commentTarget.value,
       choices
     })

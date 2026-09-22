@@ -131,7 +131,7 @@
               <fieldset class="grid gap-3">
                 <legend class="flex w-full items-baseline justify-between gap-3 text-sm font-bold">
                   <span>Availability</span>
-                  <span class="text-right text-xs font-normal text-slate-500">Times shown in <span data-event-response-target="displayTimeZone"></span></span>
+                  <span class="text-right text-xs font-normal text-slate-500">Times shown in <span data-event-response-target="formTimeZoneLabel"></span></span>
                 </legend>
                 <% @event.time_options.order(:starts_at).each do |time_option| %>
                   <div class="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-3 border-t border-slate-100 pt-3" data-time-option-id="<%= time_option.id %>">
