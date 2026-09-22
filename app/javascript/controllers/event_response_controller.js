@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { CITY_CATALOG } from "city_catalog"
 
 export default class extends Controller {
-  static targets = ["form", "name", "timeZone", "timeZoneButton", "timeZoneLabel", "timeZoneDialog", "timeZoneSearch", "timeZoneResults", "comment", "submit", "status"]
+  static targets = ["form", "name", "timeZone", "timeZoneButton", "timeZoneLabel", "displayTimeZone", "timeZoneDialog", "timeZoneSearch", "timeZoneResults", "responseDate", "optionDate", "comment", "submit", "status"]
   static values = { url: String, fallbackTimeZone: String }
 
   connect() {
@@ -34,6 +34,7 @@ export default class extends Controller {
 
     if (selectedTimeZone) this.timeZoneTarget.value = selectedTimeZone
     this.updateTimeZoneLabel()
+    this.updateDisplayedTimes()
     this.renderTimeZoneResults()
   }
 
@@ -56,12 +57,33 @@ export default class extends Controller {
   selectTimeZone(event) {
     this.timeZoneTarget.value = event.currentTarget.dataset.timeZone
     this.updateTimeZoneLabel()
+    this.updateDisplayedTimes()
     this.closeTimeZoneSearch()
+  }
+
+  updateDisplayedTimes() {
+    const timeZone = this.timeZoneTarget.value
+    this.responseDateTargets.forEach((element) => {
+      element.textContent = this.formatDate(element.dataset.instant, timeZone)
+    })
+    this.optionDateTargets.forEach((element) => {
+      element.textContent = this.formatOptionDate(element.dataset.instant, timeZone)
+    })
+  }
+
+  formatDate(instant, timeZone) {
+    return new Intl.DateTimeFormat("en-US", { timeZone, month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(instant))
+  }
+
+  formatOptionDate(instant, timeZone) {
+    return new Intl.DateTimeFormat("en-US", { timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(instant))
   }
 
   updateTimeZoneLabel() {
     const city = CITY_CATALOG.find((item) => item.timeZone === this.timeZoneTarget.value)
-    this.timeZoneLabelTarget.textContent = city ? `${city.name} (${city.timeZone})` : this.timeZoneTarget.value
+    const label = city ? `${city.name} (${city.timeZone})` : this.timeZoneTarget.value
+    this.timeZoneLabelTarget.textContent = label
+    this.displayTimeZoneTarget.textContent = label
   }
 
   renderTimeZoneResults() {

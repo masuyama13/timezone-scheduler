@@ -12,7 +12,7 @@
     </div>
   </header>
 
-  <main class="mx-auto grid max-w-4xl gap-8 px-4 py-6 sm:px-6 sm:py-8">
+  <main class="mx-auto grid max-w-4xl gap-8 px-4 py-6 sm:px-6 sm:py-8" data-controller="event-response" data-event-response-url-value="<%= event_responses_path(@event.public_token) %>" data-event-response-fallback-time-zone-value="<%= @event.time_zone %>">
     <section class="flex items-start justify-between gap-4">
       <div class="grid gap-3">
         <h1 class="text-2xl font-bold tracking-tight sm:text-3xl"><%= @event.name %></h1>
@@ -27,6 +27,31 @@
         </svg>
       </button>
       <span data-share-link-target="status" role="status" class="sr-only"></span>
+    </section>
+
+    <section class="grid gap-4" aria-labelledby="response-time-zone-heading">
+      <div class="grid gap-2">
+        <h2 id="response-time-zone-heading" class="text-lg font-bold">Your time zone</h2>
+        <label for="response-time-zone" class="sr-only">Your time zone</label>
+        <select id="response-time-zone" name="time_zone" required data-event-response-target="timeZone" class="sr-only"></select>
+        <button type="button" data-event-response-target="timeZoneButton" data-action="click->event-response#openTimeZoneSearch" class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm hover:bg-slate-50">
+          <span data-event-response-target="timeZoneLabel"></span><span aria-hidden="true">⌄</span>
+        </button>
+      </div>
+      <div data-event-response-target="timeZoneDialog" role="dialog" aria-modal="true" aria-labelledby="response-time-zone-heading" hidden>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-slate-950/50" data-action="click->event-response#closeTimeZoneSearch"></div>
+          <div class="relative z-10 h-[28rem] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
+            <div class="flex items-center justify-between gap-4">
+              <h3 id="response-time-zone-heading" class="text-lg font-bold">Search cities</h3>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50" data-action="click->event-response#closeTimeZoneSearch">×</button>
+            </div>
+            <label for="response-time-zone-search" class="mt-5 block text-sm font-bold">City or country</label>
+            <input id="response-time-zone-search" type="search" autocomplete="off" placeholder="Tokyo or Canada" data-event-response-target="timeZoneSearch" data-action="input->event-response#searchTimeZones" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3">
+            <div data-event-response-target="timeZoneResults" class="mt-3 grid gap-2" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="grid gap-4" aria-labelledby="responses-heading">
@@ -44,8 +69,7 @@
                 <th scope="col" class="<%= name_column_class %> break-words px-2 py-4 text-center text-sm font-bold">Name</th>
                 <% @event.time_options.order(:starts_at).each do |time_option| %>
                   <th scope="col" class="<%= date_column_class %> border-l border-slate-200 px-1 py-3 text-center text-xs font-bold">
-                    <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y,") %><br>
-                    <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%-I:%M %p") %>
+                    <span data-event-response-target="responseDate" data-instant="<%= time_option.starts_at.iso8601 %>"><%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %></span>
                   </th>
                 <% end %>
                 <th scope="col" class="<%= comment_column_class %> border-l border-slate-200 px-2 py-4 text-center text-sm font-bold">Comment</th>
@@ -83,7 +107,7 @@
       <% end %>
     </section>
 
-    <section class="grid gap-4" aria-labelledby="response-heading" data-controller="event-response" data-event-response-url-value="<%= event_responses_path(@event.public_token) %>">
+    <section class="grid gap-4" aria-labelledby="response-heading">
       <div>
         <h2 id="response-heading" class="text-lg font-bold">Share your availability</h2>
       </div>
@@ -92,35 +116,14 @@
           <label for="response-name" class="text-sm font-bold">Name</label>
           <input id="response-name" name="name" type="text" required maxlength="50" data-event-response-target="name" class="rounded-lg border border-slate-300 px-3 py-2">
         </div>
-        <div class="grid gap-2">
-          <label for="response-time-zone" class="text-sm font-bold">Your time zone</label>
-          <select id="response-time-zone" name="time_zone" required data-event-response-target="timeZone" data-event-response-fallback-time-zone-value="<%= @event.time_zone %>" class="sr-only"></select>
-          <button type="button" data-event-response-target="timeZoneButton" data-action="click->event-response#openTimeZoneSearch" class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm hover:bg-slate-50">
-            <span data-event-response-target="timeZoneLabel"></span>
-            <span aria-hidden="true">⌄</span>
-          </button>
-        </div>
-        <div data-event-response-target="timeZoneDialog" role="dialog" aria-modal="true" aria-labelledby="response-time-zone-heading" hidden>
-          <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-slate-950/50" data-action="click->event-response#closeTimeZoneSearch"></div>
-            <div class="relative z-10 h-[28rem] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
-              <div class="flex items-center justify-between gap-4">
-                <h3 id="response-time-zone-heading" class="text-lg font-bold">Search cities</h3>
-                <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="click->event-response#closeTimeZoneSearch">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
-                </button>
-              </div>
-              <label for="response-time-zone-search" class="mt-5 block text-sm font-bold">City or country</label>
-              <input id="response-time-zone-search" type="search" autocomplete="off" placeholder="Tokyo or Canada" data-event-response-target="timeZoneSearch" data-action="input->event-response#searchTimeZones" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200">
-              <div data-event-response-target="timeZoneResults" class="mt-3 grid gap-2" aria-live="polite"></div>
-            </div>
-          </div>
-        </div>
         <fieldset class="grid gap-3">
-          <legend class="text-sm font-bold">Availability</legend>
+          <legend class="flex w-full items-baseline justify-between gap-3 text-sm font-bold">
+            <span>Availability</span>
+            <span class="text-right text-xs font-normal text-slate-500">Times shown in <span data-event-response-target="displayTimeZone"></span></span>
+          </legend>
           <% @event.time_options.order(:starts_at).each do |time_option| %>
             <div class="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-3 border-t border-slate-100 pt-3" data-time-option-id="<%= time_option.id %>">
-              <p class="min-w-0 text-sm font-bold"><%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %-I:%M %p") %></p>
+              <p class="min-w-0 text-sm font-bold" data-event-response-target="optionDate" data-instant="<%= time_option.starts_at.iso8601 %>"><%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %-I:%M %p") %></p>
               <div class="grid grid-cols-3 gap-1.5">
                 <% [["available", "✓"], ["maybe", "?"], ["unavailable", "×"]].each do |value, icon| %>
                   <label class="group flex h-12 cursor-pointer items-center justify-center rounded-lg border border-slate-300 bg-white text-xl font-bold text-slate-700 transition hover:border-blue-500 hover:bg-blue-50 has-[:checked]:border-blue-700 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700">
