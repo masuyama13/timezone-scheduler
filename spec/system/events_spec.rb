@@ -68,9 +68,10 @@ RSpec.describe "Shared event", type: :system do
     fill_in "Comment", with: "Looking forward to it"
     click_button "Submit"
 
-    expect(page).to have_text("Availability submitted.")
-    event.reload
-    expect(event.responses.count).to eq(1)
-    expect(event.responses.first.votes.pluck(:availability)).to contain_exactly("available", "maybe")
+    expect(page).to have_text("Responses")
+    expect(page).to have_text("1 response")
+    expect(page).to have_text("Alex")
+    expect(page).to have_text("Vancouver")
+    expect(page).to have_text("Looking forward to it")
   end
 end

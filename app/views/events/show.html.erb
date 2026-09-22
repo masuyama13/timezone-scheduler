@@ -1,6 +1,10 @@
 <% content_for :title, "#{@event.name} | Timezone Scheduler" %>
 
 <% share_url = request.base_url + event_path(@event.public_token) %>
+<% compact_response_table = @event.time_options.size > 6 %>
+<% name_column_class = compact_response_table ? "w-20" : "w-20 lg:w-28" %>
+<% date_column_class = compact_response_table ? "w-16 max-w-16" : "w-16 max-w-16 lg:w-20 lg:max-w-20" %>
+<% comment_column_class = compact_response_table ? "w-28 lg:w-28" : "w-28 lg:w-64 lg:max-w-64" %>
 <div class="min-h-screen bg-slate-50 text-slate-900" data-controller="share-link" data-share-link-url-value="<%= share_url %>">
   <header class="border-b border-slate-200 bg-slate-50">
     <div class="mx-auto flex h-12 max-w-4xl items-center px-4 sm:px-6">
@@ -34,17 +38,17 @@
         <p class="text-sm text-slate-600">No responses yet.</p>
       <% else %>
         <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white lg:overflow-x-hidden">
-          <table class="min-w-[42rem] w-full table-fixed border-collapse text-left text-sm lg:min-w-0">
+          <table class="w-max table-fixed border-collapse text-left text-sm lg:w-full">
             <thead>
               <tr class="border-b border-slate-200 text-slate-700">
-                <th scope="col" class="w-24 break-words px-2 py-4 text-sm font-bold">Name</th>
+                <th scope="col" class="<%= name_column_class %> break-words px-2 py-4 text-center text-sm font-bold">Name</th>
                 <% @event.time_options.order(:starts_at).each do |time_option| %>
-                  <th scope="col" class="border-l border-slate-200 px-1 py-3 text-center text-xs font-bold">
+                  <th scope="col" class="<%= date_column_class %> border-l border-slate-200 px-1 py-3 text-center text-xs font-bold">
                     <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y,") %><br>
                     <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%-I:%M %p") %>
                   </th>
                 <% end %>
-                <th scope="col" class="w-32 border-l border-slate-200 px-2 py-4 text-sm font-bold">Comment</th>
+                <th scope="col" class="<%= comment_column_class %> border-l border-slate-200 px-2 py-4 text-center text-sm font-bold">Comment</th>
               </tr>
             </thead>
             <tbody>
@@ -57,11 +61,11 @@
                   </th>
                   <% @event.time_options.order(:starts_at).each do |time_option| %>
                     <% vote = votes_by_time_option[time_option.id] %>
-                    <td class="border-l border-slate-200 px-1 py-4 text-center text-xl font-bold" aria-label="<%= availability_label(vote&.availability) %>">
+                    <td class="<%= date_column_class %> border-l border-slate-200 px-1 py-4 text-center text-xl font-bold" aria-label="<%= availability_label(vote&.availability) %>">
                       <%= availability_symbol(vote&.availability) %>
                     </td>
                   <% end %>
-                  <td class="break-words border-l border-slate-200 px-2 py-4 text-sm text-slate-600"><%= response.comment %></td>
+                  <td class="<%= comment_column_class %> break-words border-l border-slate-200 px-2 py-4 text-sm text-slate-600"><%= response.comment %></td>
                 </tr>
               <% end %>
             </tbody>
@@ -69,7 +73,7 @@
               <tr class="border-t border-slate-200 text-orange-700">
                 <th scope="row" class="px-4 py-4 text-sm font-bold">Available</th>
                 <% @event.time_options.order(:starts_at).each do |time_option| %>
-                  <td class="border-l border-slate-200 px-1 py-4 text-center text-lg font-bold"><%= availability_counts(time_option, @responses).fetch("Available") %></td>
+                  <td class="<%= date_column_class %> border-l border-slate-200 px-1 py-4 text-center text-lg font-bold"><%= availability_counts(time_option, @responses).fetch("Available") %></td>
                 <% end %>
                 <td class="border-l border-slate-200"></td>
               </tr>

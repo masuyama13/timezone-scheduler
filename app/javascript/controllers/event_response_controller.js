@@ -65,9 +65,8 @@ export default class extends Controller {
       const data = await response.json()
       if (!response.ok) throw new Error(data.errors?.join(" ") || "Could not submit your availability. Please try again.")
 
-      this.formTarget.reset()
-      this.statusTarget.className = "text-sm text-emerald-700"
-      this.statusTarget.textContent = "Availability submitted."
+      window.scrollTo(0, 0)
+      window.location.assign(window.location.href)
     } catch (error) {
       this.statusTarget.className = "text-sm text-amber-700"
       this.statusTarget.textContent = error.message
