@@ -4,7 +4,7 @@ import { CITY_CATALOG } from "city_catalog"
 const STORAGE_KEY = "timezone-scheduler.world-clock"
 
 export default class extends Controller {
-  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewModal", "reviewList", "planStatus", "createForm", "createName", "createDescription", "createStatus", "createButton", "createResult"]
+  static targets = ["modal", "date", "time", "status", "previews", "summary", "count", "list", "reviewModal", "reviewList", "planStatus", "createForm", "createName", "createDescription", "createStatus", "createButton", "createResult", "timeOptionsHeading"]
   static values = { url: String, reviewUrl: String }
 
   connect() {
@@ -108,9 +108,41 @@ export default class extends Controller {
       }
       if (!response.ok) throw new Error(data.errors?.join(" ") || "Could not create the event. Please try again.")
 
-      window.location.assign(`/events/${data.public_token}`)
+      this.createFormTarget.hidden = true
+      this.timeOptionsHeadingTarget.hidden = true
+      this.reviewListTarget.hidden = true
+      this.createStatusTarget.className = "mt-3 text-sm text-emerald-700"
+      this.createStatusTarget.textContent = "Event created. Share this event:"
+      const eventUrl = new URL(`/events/${data.public_token}`, window.location.origin).toString()
+      const link = document.createElement("a")
+      link.className = "break-all text-sm font-bold text-blue-700 underline"
+      link.href = eventUrl
+      link.textContent = eventUrl
+      const copy = document.createElement("button")
+      copy.type = "button"
+      copy.className = "flex h-9 w-9 shrink-0 aspect-square items-center justify-center rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50"
+      copy.setAttribute("aria-label", "Copy event link")
+      copy.title = "Copy event link"
+      copy.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><rect x="9" y="9" width="10" height="10" rx="1"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 15H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1"/></svg>'
+      copy.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(eventUrl)
+        copy.setAttribute("aria-label", "Event link copied")
+        copy.title = "Event link copied"
+      })
+      const result = document.createElement("div")
+      result.className = "grid gap-3"
+      const linkRow = document.createElement("div")
+      linkRow.className = "flex items-center gap-2"
+      linkRow.append(link, copy)
+      const open = document.createElement("a")
+      open.className = "mt-3 block w-full rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-bold text-white hover:bg-blue-800"
+      open.href = eventUrl
+      open.textContent = "View event"
+      result.append(linkRow, open)
+      this.createResultTarget.append(result)
     } catch (error) {
       this.createButtonTarget.disabled = false
+      this.createStatusTarget.className = "mt-3 text-sm text-amber-700"
       this.createStatusTarget.textContent = error.message
     }
   }
