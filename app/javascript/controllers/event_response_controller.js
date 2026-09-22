@@ -76,7 +76,7 @@ export default class extends Controller {
   }
 
   formatOptionDate(instant, timeZone) {
-    return new Intl.DateTimeFormat("en-US", { timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(instant))
+    return new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(instant))
   }
 
   updateTimeZoneLabel() {

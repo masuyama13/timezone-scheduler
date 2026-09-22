@@ -32,6 +32,7 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Choose a time")
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Tokyo")
+    expect(page).to have_text(/\b[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2}, \d{4}, \d{1,2}:\d{2} [AP]M\b/)
     expect(page).to have_button("Copy event link")
     expect(page).to have_button("Vancouver (America/Vancouver)")
     click_button "Vancouver (America/Vancouver)"
