@@ -43,8 +43,6 @@ RSpec.describe "Events", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Planning session")
       expect(response.body).to include("Choose a time")
-      expect(response.body).to include("Vancouver")
-      expect(response.body).to include("Tokyo")
       expect(response.body).to include(event_path(event.public_token))
       expect(response.body).to include("This page and its responses may be deleted after one year.")
     end

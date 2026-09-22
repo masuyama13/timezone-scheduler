@@ -40,21 +40,26 @@ export default class extends Controller {
     this.submitTarget.disabled = true
     this.statusTarget.textContent = ""
 
-    const body = new URLSearchParams()
-    body.set("name", this.nameTarget.value)
-    body.set("time_zone", this.timeZoneTarget.value)
-    body.set("comment", this.commentTarget.value)
-
-    this.element.querySelectorAll("[data-time-option-id]").forEach((option, index) => {
+    const choices = []
+    this.element.querySelectorAll("[data-time-option-id]").forEach((option) => {
       const selected = option.querySelector("input[type=radio]:checked")
-      body.set(`choices[${index}][time_option_id]`, option.dataset.timeOptionId)
-      body.set(`choices[${index}][availability]`, selected?.value || "")
+      choices.push({
+        time_option_id: option.dataset.timeOptionId,
+        availability: selected?.value || ""
+      })
+    })
+
+    const body = JSON.stringify({
+      name: this.nameTarget.value,
+      time_zone: this.timeZoneTarget.value,
+      comment: this.commentTarget.value,
+      choices
     })
 
     try {
       const response = await fetch(this.urlValue, {
         method: "POST",
-        headers: { Accept: "application/json" },
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
         body
       })
       const data = await response.json()

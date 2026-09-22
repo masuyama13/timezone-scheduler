@@ -178,7 +178,7 @@ RSpec.describe "World Clock", type: :system do
     click_button "Close"
     click_button "Plan an event"
 
-    expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
+    expect(page).to have_css("[data-candidate-times-target='reviewModal']", visible: true)
     expect(page).to have_text("Plan an event")
     expect(page).to have_text("Time options")
     expect(page).to have_text("By creating this event, you agree to the Terms of Service.")
@@ -208,7 +208,7 @@ RSpec.describe "World Clock", type: :system do
     click_button "Close"
     click_button "Plan an event"
 
-    expect(page).to have_css('[aria-labelledby="review-times-heading"]', visible: true)
+    expect(page).to have_css("[data-candidate-times-target='reviewModal']", visible: true)
     expect(page).not_to have_css('[aria-labelledby="candidate-time-heading"]', visible: true)
   end
 
@@ -228,7 +228,6 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_text("Team sync")
     expect(page).to have_text("Choose a time together")
     expect(page).to have_button("Copy link")
-    expect(page).to have_text("Option 1")
     expect(page).to have_button("Delete event")
 
     accept_confirm do

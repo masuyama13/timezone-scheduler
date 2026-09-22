@@ -113,7 +113,7 @@
           <label for="response-comment" class="text-sm font-bold">Comment <span class="font-normal text-slate-500">(optional)</span></label>
           <textarea id="response-comment" name="comment" rows="2" maxlength="400" data-event-response-target="comment" class="rounded-lg border border-slate-300 px-3 py-2"></textarea>
         </div>
-        <button type="submit" data-event-response-target="submit" class="w-fit rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-wait disabled:opacity-60">Submit</button>
+        <button type="button" data-action="click->event-response#submit" data-event-response-target="submit" class="w-fit rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-wait disabled:opacity-60">Submit</button>
         <p data-event-response-target="status" role="status" class="text-sm text-amber-700"></p>
       </form>
     </section>

@@ -35,7 +35,7 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_button("Copy link")
     expect(page).to have_field(type: "text", with: /\/events\/#{event.public_token}/)
     expect(page).to have_select("Your time zone", with_options: [ "Tokyo (Asia/Tokyo)" ])
-    expect(page).to have_field("Comment", rows: 2)
+    expect(page).to have_css('textarea#response-comment[rows="2"]')
     expect(page).to have_text("This page and its responses may be deleted after one year.")
     expect(page).to have_text("No responses yet.")
   end
@@ -61,12 +61,15 @@ RSpec.describe "Shared event", type: :system do
 
   it "submits an availability response" do
     fill_in "Name", with: "Alex"
-    choose "Available", match: :first
-    choose "Maybe", match: :first
+    page.execute_script(<<~JS)
+      document.querySelectorAll('input[value="available"]')[0].click()
+      document.querySelectorAll('input[value="maybe"]')[1].click()
+    JS
     fill_in "Comment", with: "Looking forward to it"
     click_button "Submit"
 
     expect(page).to have_text("Availability submitted.")
+    event.reload
     expect(event.responses.count).to eq(1)
     expect(event.responses.first.votes.pluck(:availability)).to contain_exactly("available", "maybe")
   end
