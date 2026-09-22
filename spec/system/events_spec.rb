@@ -98,6 +98,28 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Updated", wait: 5)
   end
 
+  it "deletes an availability response from the edit modal" do
+    response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver")
+    event.time_options.order(:starts_at).each do |time_option|
+      response.votes.create!(time_option: time_option, availability: :available)
+    end
+
+    visit event_path(event.public_token)
+    find("button[data-response-id=\"#{response.id}\"]").click
+    expect(page).to have_button("Delete response")
+
+    dismiss_confirm do
+      click_button "Delete response"
+    end
+    expect(page).to have_text("Alex")
+
+    accept_confirm(/Delete Alex's response\?/) do
+      click_button "Delete response"
+    end
+
+    expect(page).to have_text("No responses yet.", wait: 5)
+  end
+
   it "keeps page times in the viewer timezone while editing another response" do
     response = event.responses.create!(name: "Tokyo guest", time_zone: "Asia/Tokyo")
     event.time_options.order(:starts_at).each do |time_option|

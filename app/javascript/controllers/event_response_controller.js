@@ -5,7 +5,7 @@ export default class extends Controller {
   static targets = [
     "form", "name", "timeZone", "timeZoneButton", "timeZoneLabel", "formTimeZoneLabel",
     "timeZoneDialog", "timeZoneSearch", "timeZoneResults", "responseDate", "optionDate",
-    "comment", "submit", "submitLabel", "status", "responseDialog", "modalTitle"
+    "comment", "submit", "submitLabel", "deleteButton", "status", "responseDialog", "modalTitle"
   ]
   static values = { url: String, updateUrlTemplate: String, fallbackTimeZone: String }
 
@@ -78,6 +78,7 @@ export default class extends Controller {
     this.updateDisplayedTimes()
     this.modalTitleTarget.textContent = "Add your availability"
     this.submitLabelTarget.textContent = "Add response"
+    this.deleteButtonTarget.hidden = true
     this.responseDialogTarget.hidden = false
     this.nameTarget.focus()
   }
@@ -102,6 +103,7 @@ export default class extends Controller {
     this.statusTarget.textContent = ""
     this.modalTitleTarget.textContent = "Edit your response"
     this.submitLabelTarget.textContent = "Save changes"
+    this.deleteButtonTarget.hidden = false
     this.responseDialogTarget.hidden = false
     this.nameTarget.focus()
   }
@@ -113,8 +115,37 @@ export default class extends Controller {
 
   resetResponseForm() {
     this.formTarget.reset()
+    this.deleteButtonTarget.hidden = true
     this.statusTarget.textContent = ""
     this.statusTarget.className = "text-sm text-amber-700"
+  }
+
+  async deleteResponse() {
+    if (!this.editingResponseId) return
+    const name = this.nameTarget.value || "this response"
+    if (!window.confirm(`Delete ${name}'s response? All availability choices and the comment will be deleted.`)) return
+
+    this.deleteButtonTarget.disabled = true
+    this.statusTarget.textContent = ""
+    const url = this.updateUrlTemplateValue.replace("RESPONSE_ID", this.editingResponseId)
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: { Accept: "application/json" }
+      })
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.errors?.join(" ") || "Could not delete this response. Please try again.")
+      }
+
+      window.scrollTo(0, 0)
+      window.location.assign(window.location.href)
+    } catch (error) {
+      this.statusTarget.className = "text-sm text-amber-700"
+      this.statusTarget.textContent = error.message
+      this.deleteButtonTarget.disabled = false
+    }
   }
 
   updateDisplayedTimes() {
