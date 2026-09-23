@@ -43,6 +43,7 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_css('textarea#response-comment[rows="2"]')
     expect(page).to have_text("This page and its responses may be deleted after one year.")
     expect(page).to have_text("No responses yet.")
+    expect(page).to have_css("tfoot td.font-normal", count: event.time_options.count)
   end
 
 
@@ -62,6 +63,8 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Alex")
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Looking forward to it")
+    expect(page).to have_css("tfoot td[data-candidate-share-column-index=\"0\"].font-bold")
+    expect(page).to have_css("tfoot td[data-candidate-share-column-index=\"1\"].font-normal")
   end
 
   it "opens a candidate time modal with unique local times" do

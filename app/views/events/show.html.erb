@@ -5,6 +5,9 @@
 <% name_column_class = compact_response_table ? "w-20" : "w-20 lg:w-28" %>
 <% date_column_class = compact_response_table ? "w-16 max-w-16" : "w-16 max-w-16 lg:w-20 lg:max-w-20" %>
 <% comment_column_class = compact_response_table ? "w-28 lg:w-28" : "w-28 lg:w-64 lg:max-w-64" %>
+<% time_options = @event.time_options.order(:starts_at) %>
+<% available_counts = time_options.to_h { |time_option| [time_option.id, availability_counts(time_option, @responses).fetch("Available")] } %>
+<% maximum_available = available_counts.values.max %>
 <div class="min-h-screen bg-slate-50 text-slate-900" data-controller="share-link" data-share-link-url-value="<%= share_url %>">
   <header class="border-b border-slate-200 bg-slate-50">
     <div class="mx-auto flex h-12 max-w-4xl items-center px-4 sm:px-6">
@@ -99,8 +102,10 @@
             <tfoot>
               <tr class="border-t border-slate-200 text-orange-700">
                 <th scope="row" class="px-4 py-4 text-sm font-bold">Available</th>
-                <% @event.time_options.order(:starts_at).each_with_index do |time_option, index| %>
-                  <td tabindex="0" role="button" aria-label="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-4 text-center text-lg font-bold transition-colors focus:bg-blue-50 focus:outline-none"><%= availability_counts(time_option, @responses).fetch("Available") %></td>
+                <% time_options.each_with_index do |time_option, index| %>
+                  <% available_count = available_counts.fetch(time_option.id) %>
+                  <% count_weight = maximum_available&.positive? && available_count == maximum_available ? "font-bold" : "font-normal" %>
+                  <td tabindex="0" role="button" aria-label="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-4 text-center text-lg <%= count_weight %> transition-colors focus:bg-blue-50 focus:outline-none"><%= available_count %></td>
                 <% end %>
                 <td class="border-l border-slate-200"></td>
               </tr>
