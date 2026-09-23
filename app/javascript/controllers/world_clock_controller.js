@@ -146,7 +146,7 @@ export default class extends Controller {
 
     const action = document.createElement("button")
     action.type = "button"
-    action.className = "rounded-lg px-2 py-1 text-sm font-bold text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    action.className = "rounded-lg px-2 py-1 text-sm font-bold text-brand-700 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500"
 
     if (city.primary) {
       action.dataset.action = "click->world-clock#openChange"

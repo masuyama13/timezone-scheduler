@@ -11,11 +11,11 @@ export default class extends Controller {
   }
 
   highlightColumn(event) {
-    this.columnElements(event.currentTarget).forEach((element) => element.classList.add("bg-blue-50"))
+    this.columnElements(event.currentTarget).forEach((element) => element.classList.add("bg-brand-50"))
   }
 
   unhighlightColumn(event) {
-    this.columnElements(event.currentTarget).forEach((element) => element.classList.remove("bg-blue-50"))
+    this.columnElements(event.currentTarget).forEach((element) => element.classList.remove("bg-brand-50"))
   }
 
   activate(event) {

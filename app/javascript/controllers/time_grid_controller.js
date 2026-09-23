@@ -191,8 +191,8 @@ export default class extends Controller {
     if (this.hoveredTable === table && this.hoveredHourIndex === hourIndex) return
     this.clearColumnHighlight(table)
     table.querySelectorAll(`[data-hour-index="${hourIndex}"]`).forEach((cell) => {
-      cell.classList.add("bg-blue-50")
-      cell.style.backgroundColor = "var(--color-blue-50)"
+      cell.classList.add("bg-brand-50")
+      cell.style.backgroundColor = "var(--color-brand-50)"
     })
     this.hoveredTable = table
     this.hoveredHourIndex = hourIndex
@@ -200,7 +200,7 @@ export default class extends Controller {
 
   clearColumnHighlight(table) {
     table.querySelectorAll("[data-hour-index]").forEach((cell) => {
-      cell.classList.remove("bg-blue-50")
+      cell.classList.remove("bg-brand-50")
       cell.style.removeProperty("background-color")
     })
     if (this.hoveredTable === table) {
@@ -219,7 +219,7 @@ export default class extends Controller {
     const previous = document.createElement("button")
     previous.disabled = this.mobileHourOffset === 0
     previous.type = "button"
-    previous.className = "rounded-lg px-3 py-2 text-sm font-bold text-blue-700 hover:bg-blue-50"
+    previous.className = "rounded-lg px-3 py-2 text-sm font-bold text-brand-700 hover:bg-brand-50"
     previous.setAttribute("aria-label", "Show previous 12 hours")
     previous.textContent = "← Previous 12 hours"
     previous.dataset.action = "click->time-grid#previousPage"
@@ -227,7 +227,7 @@ export default class extends Controller {
     const next = document.createElement("button")
     next.disabled = this.mobileHourOffset + 12 >= this.instants.length
     next.type = "button"
-    next.className = "rounded-lg px-3 py-2 text-sm font-bold text-blue-700 hover:bg-blue-50"
+    next.className = "rounded-lg px-3 py-2 text-sm font-bold text-brand-700 hover:bg-brand-50"
     next.setAttribute("aria-label", "Show next 12 hours")
     next.textContent = "Next 12 hours →"
     next.dataset.action = "click->time-grid#nextPage"
@@ -263,8 +263,8 @@ export default class extends Controller {
 
     const action = document.createElement("button")
     action.type = "button"
-    action.className = "w-fit shrink-0 rounded-lg px-1 py-0.5 text-xs font-bold hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    action.classList.add(city.primary ? "text-blue-700" : "text-slate-400")
+    action.className = "w-fit shrink-0 rounded-lg px-1 py-0.5 text-xs font-bold hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+    action.classList.add(city.primary ? "text-brand-700" : "text-slate-400")
     if (city.primary) {
       action.classList.add("group")
       action.dataset.action = "click->world-clock#openChange"
