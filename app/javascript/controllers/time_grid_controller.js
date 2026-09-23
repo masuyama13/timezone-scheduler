@@ -160,14 +160,13 @@ export default class extends Controller {
       visibleInstants.forEach((instant) => {
         const date = this.localDate(instant, city.timeZone)
         const time = this.formatTime(instant, city.timeZone, true)
-        const cell = this.cell(time, "min-w-0 cursor-pointer bg-white px-0.5 py-4 text-center text-[0.65rem] text-slate-600")
+        const startsNewDate = date !== previousDate
+        const cellLabel = startsNewDate ? this.formatDate(instant, city.timeZone) : time
+        const cell = this.cell(cellLabel, "min-w-0 cursor-pointer bg-white px-0.5 py-4 text-center text-[0.65rem] text-slate-600")
         cell.dataset.instant = instant.toISOString()
         cell.dataset.hourIndex = visibleInstants.indexOf(instant).toString()
         cell.dataset.action = "click->time-grid#selectInstant"
         cell.setAttribute("aria-label", `${city.name}, ${date}, ${this.formatTime(instant, city.timeZone)}, ${this.offsetLabel(instant, city.timeZone)}`)
-        if (date !== previousDate) {
-          cell.append(this.cell(this.formatDate(instant, city.timeZone), "block text-[0.55rem] text-slate-500"))
-        }
         const label = `${date} ${this.formatTime(instant, city.timeZone)}`
         if (labels.filter((value) => value === label).length > 1) {
           cell.append(this.cell(this.offsetLabel(instant, city.timeZone), "block text-[0.55rem] text-slate-500"))

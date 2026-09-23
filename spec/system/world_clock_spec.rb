@@ -96,9 +96,11 @@ RSpec.describe "World Clock", type: :system do
     expect(rows[0].all("[data-instant]").map { |cell| cell["data-instant"] }).to eq(
       rows[1].all("[data-instant]").map { |cell| cell["data-instant"] }
     )
-    expect(rows[1]).to have_text("8:30 PM")
+    expect(rows[1]).to have_text(/\d+:30 PM/)
     expect(rows[1]).to have_text("Sep 19")
     expect(rows[1]).to have_text("Sep 20")
+    expect(rows[1].all("[data-instant]").first).to have_text("Sep 19")
+    expect(rows[1].all("[data-instant]").first).not_to have_text("12 AM")
   end
 
   it "renders missing and repeated hours on transition dates" do
