@@ -1,14 +1,14 @@
 <% content_for :title, "World Clock | Timezone Scheduler" %>
 
-<div class="min-h-screen bg-slate-50 text-slate-900" data-controller="world-clock time-grid candidate-times" data-time-grid-url-value="<%= world_clock_timeline_path %>" data-candidate-times-url-value="<%= world_clock_time_resolution_path %>" data-candidate-times-review-url-value="<%= world_clock_candidate_review_path %>">
+<div class="min-h-screen min-w-0 overflow-x-hidden bg-slate-50 text-slate-900" data-controller="world-clock time-grid candidate-times" data-time-grid-url-value="<%= world_clock_timeline_path %>" data-candidate-times-url-value="<%= world_clock_time_resolution_path %>" data-candidate-times-review-url-value="<%= world_clock_candidate_review_path %>">
   <header class="border-b border-slate-200 bg-slate-50">
     <div class="mx-auto flex h-12 max-w-4xl items-center px-4 sm:px-6">
       <h1 class="text-base font-bold tracking-tight sm:text-lg">Timezone Scheduler</h1>
     </div>
   </header>
 
-  <main class="mx-auto grid max-w-4xl gap-10 px-4 py-6 sm:px-6 sm:py-8">
-    <section aria-label="World Clock">
+  <main class="mx-auto grid min-w-0 max-w-4xl gap-10 px-4 py-6 sm:px-6 sm:py-8">
+    <section class="min-w-0" aria-label="World Clock">
       <div class="flex items-center gap-2">
         <div class="min-w-0 flex-1 items-center justify-start gap-0.5" data-time-grid-target="dateControls" hidden>
           <button type="button" aria-label="Previous week" title="Previous week" data-action="time-grid#previousWeek" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-blue-700 hover:text-blue-900">
@@ -36,7 +36,7 @@
       <p data-time-grid-target="status" role="status" class="text-sm text-amber-700"></p>
       <button type="button" data-time-grid-target="retry" data-action="time-grid#refresh" class="rounded-lg px-3 py-2 text-sm text-blue-700" hidden>Retry</button>
       <div class="mb-3 flex items-center justify-between gap-2" data-time-grid-target="navigation" hidden></div>
-      <div class="mt-4" data-time-grid-target="grid" aria-live="polite"></div>
+      <div class="mt-4 min-w-0" data-time-grid-target="grid" aria-live="polite"></div>
 
       <div class="mt-4 flex items-center justify-between gap-3">
         <button type="button" class="ml-auto rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800" data-action="click->candidate-times#planMeeting">Plan an event</button>

@@ -134,14 +134,14 @@ export default class extends Controller {
       return
     }
 
-    const mobile = window.matchMedia("(max-width: 639px)").matches
-    const visibleInstants = mobile ? this.instants.slice(this.mobileHourOffset, this.mobileHourOffset + 12) : this.instants
+    const visibleInstants = this.instants
     const hours = Math.max(visibleInstants.length, 1)
-    this.renderNavigation(mobile)
     const cityColumn = "9rem"
-    const columns = `${cityColumn} repeat(${hours}, minmax(0, 1fr))`
+    const hourColumn = "1.9rem"
+    const columns = `${cityColumn} repeat(${hours}, ${hourColumn})`
     const table = document.createElement("div")
-    table.className = "w-full"
+    table.className = "w-max min-w-full"
+    table.style.minWidth = `calc(${cityColumn} + ${hours * 1.9}rem)`
     table.addEventListener("mouseover", (event) => {
       const cell = event.target.closest("[data-hour-index]")
       if (cell && table.contains(cell)) this.highlightColumn(table, cell.dataset.hourIndex)
@@ -181,7 +181,7 @@ export default class extends Controller {
     })
 
     const viewport = document.createElement("div")
-    viewport.className = "max-w-full overflow-x-auto rounded-xl border border-slate-200 bg-slate-200"
+    viewport.className = "min-w-0 max-w-full overflow-x-auto rounded-xl border border-slate-200 bg-slate-200"
     viewport.append(table)
     this.gridTarget.append(viewport)
   }

@@ -130,24 +130,16 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_text("GMT-05:00")
   end
 
-  it "pages through every instant on mobile and resets the page on date changes" do
+  it "keeps every instant in the horizontally scrollable mobile grid" do
     page.current_window.resize_to(390, 844)
     change_primary_to_new_york
     select_date("2026-11-01")
+    expect(page).to have_css("[data-instant]", count: 25)
     expect(page).to have_css('[data-instant="2026-11-01T04:00:00.000Z"]')
-    expect(page).to have_css("[data-instant]", count: 12)
-    expect(page).to have_css('button[aria-label="Show previous 12 hours"][disabled]')
-    find('button[aria-label="Show next 12 hours"]').click
-    expect(page).to have_css('[data-instant="2026-11-01T16:00:00.000Z"]')
-    find('button[aria-label="Show next 12 hours"]').click
-    expect(page).to have_css("[data-instant]", count: 1)
     expect(page).to have_css('[data-instant="2026-11-02T04:00:00.000Z"]')
-    expect(page).to have_css('button[aria-label="Show next 12 hours"][disabled]')
-    find('button[aria-label="Show previous 12 hours"]').click
-    expect(page).to have_css("[data-instant]", count: 12)
-    find('button[aria-label="Next day"]').click
-    expect(page).to have_css('[data-instant="2026-11-02T05:00:00.000Z"]')
-    expect(page).to have_css('button[aria-label="Show previous 12 hours"][disabled]')
+    expect(page).not_to have_button("Show previous 12 hours")
+    expect(page).not_to have_button("Show next 12 hours")
+    expect(page).to have_css("[data-time-grid-target='grid'] .overflow-x-auto")
   ensure
     page.current_window.resize_to(1280, 900)
   end
