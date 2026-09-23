@@ -64,6 +64,24 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Looking forward to it")
   end
 
+  it "opens a candidate time modal with unique local times" do
+    vancouver_response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver")
+    tokyo_response = event.responses.create!(name: "Hana", time_zone: "Asia/Tokyo")
+    event.time_options.order(:starts_at).each do |time_option|
+      vancouver_response.votes.create!(time_option: time_option, availability: :available)
+      tokyo_response.votes.create!(time_option: time_option, availability: :maybe)
+    end
+
+    visit event_path(event.public_token)
+    find('th[data-candidate-share-column-index="0"]').click
+
+    expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page).to have_text("Selected time")
+    expect(page).to have_text("Vancouver")
+    expect(page).to have_text("Tokyo")
+    expect(page).to have_css('[data-candidate-share-target="times"] p', count: 2)
+  end
+
   it "submits an availability response" do
     click_button "Add your availability"
     fill_in "Name", with: "Alex"

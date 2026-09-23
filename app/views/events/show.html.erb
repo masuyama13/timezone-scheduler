@@ -54,21 +54,21 @@
       </div>
     </section>
 
-    <section class="grid gap-4" aria-labelledby="responses-heading">
+    <section class="grid gap-4" aria-labelledby="responses-heading" data-controller="candidate-share" data-candidate-share-event-name-value="<%= @event.name %>" data-candidate-share-event-time-zone-value="<%= @event.time_zone %>" data-candidate-share-respondent-time-zones-value="<%= json_escape(@responses.map(&:time_zone).to_json) %>">
       <div class="flex items-baseline justify-between gap-4">
         <h2 id="responses-heading" class="text-lg font-bold">Responses</h2>
         <span class="text-sm text-slate-500"><%= pluralize(@responses.size, "response") %></span>
       </div>
       <% if @responses.empty? %>
         <p class="text-sm text-slate-600">No responses yet.</p>
-      <% else %>
-        <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white lg:overflow-x-hidden">
+      <% end %>
+      <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white lg:overflow-x-hidden">
           <table class="w-max table-fixed border-collapse text-left text-sm lg:w-full">
             <thead>
               <tr class="border-b border-slate-200 text-slate-700">
                 <th scope="col" class="<%= name_column_class %> break-words px-2 py-4 text-center text-sm font-bold">Name</th>
-                <% @event.time_options.order(:starts_at).each do |time_option| %>
-                  <th scope="col" class="<%= date_column_class %> border-l border-slate-200 px-1 py-3 text-center text-xs font-bold">
+                <% @event.time_options.order(:starts_at).each_with_index do |time_option, index| %>
+                  <th scope="col" tabindex="0" role="button" aria-label="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-3 text-center text-xs font-bold transition-colors focus:bg-blue-50 focus:outline-none">
                     <span data-event-response-target="responseDate" data-instant="<%= time_option.starts_at.iso8601 %>"><%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %></span>
                   </th>
                 <% end %>
@@ -86,9 +86,9 @@
                       <span class="mt-1 block text-xs font-normal text-slate-500 group-hover:text-blue-700"><%= city_name_for_time_zone(response.time_zone) %></span>
                     </button>
                   </th>
-                  <% @event.time_options.order(:starts_at).each do |time_option| %>
+                  <% @event.time_options.order(:starts_at).each_with_index do |time_option, index| %>
                     <% vote = votes_by_time_option[time_option.id] %>
-                    <td class="<%= date_column_class %> border-l border-slate-200 px-1 py-4 text-center text-xl font-bold" aria-label="<%= availability_label(vote&.availability) %>">
+                    <td tabindex="0" role="button" aria-label="<%= availability_label(vote&.availability) %>" title="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-4 text-center text-xl font-bold transition-colors focus:bg-blue-50 focus:outline-none">
                       <%= availability_symbol(vote&.availability) %>
                     </td>
                   <% end %>
@@ -99,15 +99,27 @@
             <tfoot>
               <tr class="border-t border-slate-200 text-orange-700">
                 <th scope="row" class="px-4 py-4 text-sm font-bold">Available</th>
-                <% @event.time_options.order(:starts_at).each do |time_option| %>
-                  <td class="<%= date_column_class %> border-l border-slate-200 px-1 py-4 text-center text-lg font-bold"><%= availability_counts(time_option, @responses).fetch("Available") %></td>
+                <% @event.time_options.order(:starts_at).each_with_index do |time_option, index| %>
+                  <td tabindex="0" role="button" aria-label="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-4 text-center text-lg font-bold transition-colors focus:bg-blue-50 focus:outline-none"><%= availability_counts(time_option, @responses).fetch("Available") %></td>
                 <% end %>
                 <td class="border-l border-slate-200"></td>
               </tr>
             </tfoot>
           </table>
+      </div>
+      <div data-candidate-share-target="dialog" role="dialog" aria-modal="true" aria-labelledby="candidate-share-heading" hidden>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-slate-950/50" data-action="click->candidate-share#close"></div>
+          <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
+            <div class="flex items-center justify-between gap-4">
+              <h2 id="candidate-share-heading" class="text-xl font-bold">Selected time</h2>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50" data-action="click->candidate-share#close">×</button>
+            </div>
+            <p data-candidate-share-target="date" class="mt-5 text-lg font-bold text-slate-900"></p>
+            <div data-candidate-share-target="times" class="mt-4 grid gap-3"></div>
+          </div>
         </div>
-      <% end %>
+      </div>
     </section>
 
     <section class="grid gap-4" aria-labelledby="response-heading">
