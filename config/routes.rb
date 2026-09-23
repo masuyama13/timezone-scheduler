@@ -14,6 +14,8 @@ Rails.application.routes.draw do
   post "world_clock/candidate_review", to: "world_clock/candidate_reviews#create", as: :world_clock_candidate_review
   resources :events, param: :public_token, only: [ :create, :show, :destroy ]
   post "events/:public_token/responses", to: "events/responses#create", as: :event_responses
+  patch "events/:public_token/responses/:response_id", to: "events/responses#update", as: :event_response
+  delete "events/:public_token/responses/:response_id", to: "events/responses#destroy"
 
   root "world_clock#index"
 end

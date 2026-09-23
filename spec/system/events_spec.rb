@@ -21,7 +21,7 @@ RSpec.describe "Shared event", type: :system do
 
   it "shows the saved event and its share link" do
     expect(page).to have_text("Planning session")
-    expect(page).to have_text("Share your availability")
+    expect(page).to have_text("Add your availability")
     expect(page.evaluate_script(<<~JS)).to be(true)
       (() => {
         const form = document.querySelector('[aria-labelledby="response-heading"]')
@@ -32,13 +32,14 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Choose a time")
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Tokyo")
-    expect(page).to have_text(/\b[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2}, \d{4}, \d{1,2}:\d{2} [AP]M\b/)
     expect(page).to have_button("Copy event link")
     expect(page).to have_button("Vancouver (America/Vancouver)")
     click_button "Vancouver (America/Vancouver)"
     fill_in "City or country", with: "Tokyo"
     click_button "Tokyo"
     expect(page).to have_button("Tokyo (Asia/Tokyo)")
+    click_button "Add your availability"
+    expect(page).to have_text(/\b[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2}, \d{4}, \d{1,2}:\d{2} [AP]M\b/)
     expect(page).to have_css('textarea#response-comment[rows="2"]')
     expect(page).to have_text("This page and its responses may be deleted after one year.")
     expect(page).to have_text("No responses yet.")
@@ -64,18 +65,72 @@ RSpec.describe "Shared event", type: :system do
   end
 
   it "submits an availability response" do
+    click_button "Add your availability"
     fill_in "Name", with: "Alex"
     page.execute_script(<<~JS)
       document.querySelectorAll('input[value="available"]')[0].click()
       document.querySelectorAll('input[value="maybe"]')[1].click()
     JS
     fill_in "Comment", with: "Looking forward to it"
-    click_button "Submit"
+    click_button "Add response"
 
-    expect(page).to have_text("Responses")
-    expect(page).to have_text("1 response")
+    expect(page).to have_text("Responses", wait: 5)
+    expect(page).to have_text("1 response", wait: 5)
+    expect(page).to have_text("Alex", wait: 5)
+    expect(page).to have_text("Vancouver", wait: 5)
+    expect(page).to have_text("Looking forward to it", wait: 5)
+  end
+  it "edits an existing availability response" do
+    response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver", comment: "Original")
+    event.time_options.order(:starts_at).each_with_index do |time_option, index|
+      response.votes.create!(time_option: time_option, availability: index.zero? ? "available" : "maybe")
+    end
+
+    visit event_path(event.public_token)
+    find("button[data-response-id=\"#{response.id}\"]").click
+
+    expect(page).to have_text("Edit your response")
+    fill_in "Name", with: "Jordan"
+    fill_in "Comment", with: "Updated"
+    click_button "Save changes"
+
+    expect(page).to have_text("Jordan", wait: 5)
+    expect(page).to have_text("Updated", wait: 5)
+  end
+
+  it "deletes an availability response from the edit modal" do
+    response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver")
+    event.time_options.order(:starts_at).each do |time_option|
+      response.votes.create!(time_option: time_option, availability: :available)
+    end
+
+    visit event_path(event.public_token)
+    find("button[data-response-id=\"#{response.id}\"]").click
+    expect(page).to have_button("Delete response")
+
+    dismiss_confirm do
+      click_button "Delete response"
+    end
     expect(page).to have_text("Alex")
-    expect(page).to have_text("Vancouver")
-    expect(page).to have_text("Looking forward to it")
+
+    accept_confirm(/Delete Alex's response\?/) do
+      click_button "Delete response"
+    end
+
+    expect(page).to have_text("No responses yet.", wait: 5)
+  end
+
+  it "keeps page times in the viewer timezone while editing another response" do
+    response = event.responses.create!(name: "Tokyo guest", time_zone: "Asia/Tokyo")
+    event.time_options.order(:starts_at).each do |time_option|
+      response.votes.create!(time_option: time_option, availability: :available)
+    end
+
+    visit event_path(event.public_token)
+    page_time = find('[data-event-response-target="responseDate"]', match: :first).text
+    find("button[data-response-id=\"#{response.id}\"]").click
+
+    expect(find('[data-event-response-target="responseDate"]', match: :first).text).to eq(page_time)
+    expect(find('[data-event-response-target="optionDate"]', match: :first).text).to eq(event.time_options.first.starts_at.in_time_zone("Asia/Tokyo").strftime("%a, %b %-d, %Y, %-I:%M %p"))
   end
 end

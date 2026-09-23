@@ -106,6 +106,58 @@ RSpec.describe "Events", type: :request do
       expect(Response.last.votes.pluck(:availability)).to contain_exactly("available", "maybe")
     end
 
+    it "updates an existing response and its availability choices" do
+      post events_path, params: params
+      event = Event.last
+      existing_response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver", comment: "Original")
+      event.time_options.each { |time_option| existing_response.votes.create!(time_option: time_option, availability: :unavailable) }
+      choices = event.time_options.order(:starts_at).each_with_index.to_h do |time_option, index|
+        [ index.to_s, { time_option_id: time_option.id, availability: index.zero? ? "available" : "maybe" } ]
+      end
+
+      patch event_response_path(event.public_token, existing_response.id), params: {
+        name: "Jordan",
+        time_zone: "Asia/Tokyo",
+        comment: "Updated",
+        choices: choices
+      }, as: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.fetch("response_id")).to eq(existing_response.id)
+      expect(response_record = Response.find(existing_response.id)).to have_attributes(name: "Jordan", time_zone: "Asia/Tokyo", comment: "Updated")
+      expect(response_record.votes.order(:time_option_id).pluck(:availability)).to eq(%w[available maybe])
+    end
+
+    it "deletes an existing response and its votes" do
+      post events_path, params: params
+      event = Event.last
+      response_record = event.responses.create!(name: "Alex", time_zone: "America/Vancouver")
+      event.time_options.each { |time_option| response_record.votes.create!(time_option: time_option, availability: :available) }
+
+      expect {
+        delete event_response_path(event.public_token, response_record.id)
+      }.to change(Response, :count).by(-1).and change(Vote, :count).by(-2)
+
+      expect(response).to have_http_status(:no_content)
+      expect(Event.find(event.id)).to be_persisted
+    end
+
+    it "does not update or delete a response from another event" do
+      post events_path, params: params
+      first_event = Event.last
+      first_response = first_event.responses.create!(name: "Alex", time_zone: "America/Vancouver")
+      event_params = params.merge(name: "Another session")
+      post events_path, params: event_params
+      second_event = Event.last
+
+      patch event_response_path(second_event.public_token, first_response.id), params: { name: "Changed" }, as: :json
+      expect(response).to have_http_status(:not_found)
+
+      delete event_response_path(second_event.public_token, first_response.id)
+      expect(response).to have_http_status(:not_found)
+      expect(first_response.reload.name).to eq("Alex")
+    end
+
     it "rejects a response with an unanswered time option" do
       post events_path, params: params
       event = Event.last

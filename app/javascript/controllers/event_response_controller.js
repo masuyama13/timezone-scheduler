@@ -2,10 +2,16 @@ import { Controller } from "@hotwired/stimulus"
 import { CITY_CATALOG } from "city_catalog"
 
 export default class extends Controller {
-  static targets = ["form", "name", "timeZone", "timeZoneButton", "timeZoneLabel", "displayTimeZone", "timeZoneDialog", "timeZoneSearch", "timeZoneResults", "responseDate", "optionDate", "comment", "submit", "status"]
-  static values = { url: String, fallbackTimeZone: String }
+  static targets = [
+    "form", "name", "timeZone", "timeZoneButton", "timeZoneLabel", "formTimeZoneLabel",
+    "timeZoneDialog", "timeZoneSearch", "timeZoneResults", "responseDate", "optionDate",
+    "comment", "submit", "submitLabel", "deleteButton", "status", "responseDialog", "modalTitle"
+  ]
+  static values = { url: String, updateUrlTemplate: String, fallbackTimeZone: String }
 
   connect() {
+    this.editingResponseId = null
+    this.formTimeZone = null
     this.populateTimeZones()
   }
 
@@ -33,6 +39,7 @@ export default class extends Controller {
         : CITY_CATALOG[0]?.timeZone
 
     if (selectedTimeZone) this.timeZoneTarget.value = selectedTimeZone
+    this.formTimeZone = selectedTimeZone
     this.updateTimeZoneLabel()
     this.updateDisplayedTimes()
     this.renderTimeZoneResults()
@@ -56,9 +63,89 @@ export default class extends Controller {
 
   selectTimeZone(event) {
     this.timeZoneTarget.value = event.currentTarget.dataset.timeZone
+    if (!this.editingResponseId) this.formTimeZone = this.timeZoneTarget.value
     this.updateTimeZoneLabel()
+    this.updateFormTimeZoneLabel()
     this.updateDisplayedTimes()
     this.closeTimeZoneSearch()
+  }
+
+  openCreate() {
+    this.editingResponseId = null
+    this.resetResponseForm()
+    this.formTimeZone = this.timeZoneTarget.value
+    this.updateFormTimeZoneLabel()
+    this.updateDisplayedTimes()
+    this.modalTitleTarget.textContent = "Add your availability"
+    this.submitLabelTarget.textContent = "Add response"
+    this.deleteButtonTarget.hidden = true
+    this.responseDialogTarget.hidden = false
+    this.nameTarget.focus()
+  }
+
+  edit(event) {
+    const button = event.currentTarget
+    this.editingResponseId = button.dataset.responseId
+    this.nameTarget.value = button.dataset.responseName || ""
+    this.commentTarget.value = button.dataset.responseComment || ""
+    this.formTimeZone = button.dataset.responseTimeZone || this.timeZoneTarget.value
+    this.updateFormTimeZoneLabel()
+    this.updateDisplayedTimes()
+
+    this.formTarget.querySelectorAll('input[type="radio"]').forEach((input) => { input.checked = false })
+    const choices = JSON.parse(button.dataset.responseChoices || "{}")
+    this.formTarget.querySelectorAll("[data-time-option-id]").forEach((option) => {
+      const availability = choices[option.dataset.timeOptionId]
+      const input = availability && Array.from(option.querySelectorAll('input[type="radio"]')).find((candidate) => candidate.value === availability)
+      if (input) input.checked = true
+    })
+
+    this.statusTarget.textContent = ""
+    this.modalTitleTarget.textContent = "Edit your response"
+    this.submitLabelTarget.textContent = "Save changes"
+    this.deleteButtonTarget.hidden = false
+    this.responseDialogTarget.hidden = false
+    this.nameTarget.focus()
+  }
+
+  closeResponseModal() {
+    this.responseDialogTarget.hidden = true
+    this.resetResponseForm()
+  }
+
+  resetResponseForm() {
+    this.formTarget.reset()
+    this.deleteButtonTarget.hidden = true
+    this.statusTarget.textContent = ""
+    this.statusTarget.className = "text-sm text-amber-700"
+  }
+
+  async deleteResponse() {
+    if (!this.editingResponseId) return
+    const name = this.nameTarget.value || "this response"
+    if (!window.confirm(`Delete ${name}'s response? All availability choices and the comment will be deleted.`)) return
+
+    this.deleteButtonTarget.disabled = true
+    this.statusTarget.textContent = ""
+    const url = this.updateUrlTemplateValue.replace("RESPONSE_ID", this.editingResponseId)
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: { Accept: "application/json" }
+      })
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.errors?.join(" ") || "Could not delete this response. Please try again.")
+      }
+
+      window.scrollTo(0, 0)
+      window.location.assign(window.location.href)
+    } catch (error) {
+      this.statusTarget.className = "text-sm text-amber-700"
+      this.statusTarget.textContent = error.message
+      this.deleteButtonTarget.disabled = false
+    }
   }
 
   updateDisplayedTimes() {
@@ -66,8 +153,9 @@ export default class extends Controller {
     this.responseDateTargets.forEach((element) => {
       element.textContent = this.formatDate(element.dataset.instant, timeZone)
     })
+    const formTimeZone = this.formTimeZone || timeZone
     this.optionDateTargets.forEach((element) => {
-      element.textContent = this.formatOptionDate(element.dataset.instant, timeZone)
+      element.textContent = this.formatOptionDate(element.dataset.instant, formTimeZone)
     })
   }
 
@@ -83,7 +171,12 @@ export default class extends Controller {
     const city = CITY_CATALOG.find((item) => item.timeZone === this.timeZoneTarget.value)
     const label = city ? `${city.name} (${city.timeZone})` : this.timeZoneTarget.value
     this.timeZoneLabelTarget.textContent = label
-    this.displayTimeZoneTarget.textContent = label
+  }
+
+  updateFormTimeZoneLabel() {
+    const city = CITY_CATALOG.find((item) => item.timeZone === this.formTimeZone)
+    const label = city ? `${city.name} (${city.timeZone})` : this.formTimeZone
+    this.formTimeZoneLabelTarget.textContent = label
   }
 
   renderTimeZoneResults() {
@@ -119,7 +212,7 @@ export default class extends Controller {
     this.statusTarget.textContent = ""
 
     const choices = []
-    this.element.querySelectorAll("[data-time-option-id]").forEach((option) => {
+    this.formTarget.querySelectorAll("[data-time-option-id]").forEach((option) => {
       const selected = option.querySelector("input[type=radio]:checked")
       choices.push({
         time_option_id: option.dataset.timeOptionId,
@@ -129,19 +222,21 @@ export default class extends Controller {
 
     const body = JSON.stringify({
       name: this.nameTarget.value,
-      time_zone: this.timeZoneTarget.value,
+      time_zone: this.formTimeZone || this.timeZoneTarget.value,
       comment: this.commentTarget.value,
       choices
     })
+    const editing = Boolean(this.editingResponseId)
+    const url = editing ? this.updateUrlTemplateValue.replace("RESPONSE_ID", this.editingResponseId) : this.urlValue
 
     try {
-      const response = await fetch(this.urlValue, {
-        method: "POST",
+      const response = await fetch(url, {
+        method: editing ? "PATCH" : "POST",
         headers: { Accept: "application/json", "Content-Type": "application/json" },
         body
       })
       const data = await response.json()
-      if (!response.ok) throw new Error(data.errors?.join(" ") || "Could not submit your availability. Please try again.")
+      if (!response.ok) throw new Error(data.errors?.join(" ") || "Could not save your availability. Please try again.")
 
       window.scrollTo(0, 0)
       window.location.assign(window.location.href)
