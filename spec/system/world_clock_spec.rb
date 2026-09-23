@@ -24,6 +24,7 @@ RSpec.describe "World Clock", type: :system do
     find("button[data-city-key='vancouver']").click
 
     expect(page).to have_content("Vancouver")
+    expect(page).to have_css("button[aria-label='Remove Vancouver'] [data-icon='x-circle']", visible: :all)
     expect(page).to have_content("2 of 10 cities")
   end
 

@@ -290,7 +290,7 @@ export default class extends Controller {
       action.dataset.action = "click->world-clock#removeCity"
       action.setAttribute("aria-label", `Remove ${city.name}`)
       action.title = `Remove ${city.name}`
-      action.append(this.icon("trash"))
+      action.append(this.icon("x-circle"))
     }
     cityLine.append(name, action)
     header.append(cityLine)
@@ -321,7 +321,9 @@ export default class extends Controller {
       ? "m16.862 3.487 3.651 3.651M18.5 2.75a2.121 2.121 0 0 1 3 3L7.5 19.75 3 21l1.25-4.5L18.5 2.75Z"
       : name === "home"
         ? "M11.47 3.84a.75.75 0 0 1 1.06 0l8.25 8.25a.75.75 0 0 1-1.06 1.06L19 12.44v7.31a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-4.5h-2v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-7.31l-.72.71a.75.75 0 1 1-1.06-1.06l8.25-8.25Z"
-        : "m6 7.5 1 12h10l1-12M4.5 7.5h15M9.5 7.5V5h5v2.5M10 11v5M14 11v5")
+        : name === "x-circle"
+          ? "M12 4.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15ZM9 9l6 6m0-6-6 6"
+          : "m6 7.5 1 12h10l1-12M4.5 7.5h15M9.5 7.5V5h5v2.5M10 11v5M14 11v5")
     svg.append(path)
     return svg
   }
