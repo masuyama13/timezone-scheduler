@@ -10,6 +10,11 @@ RSpec.describe "World Clock", type: :system do
   it "renders a 24-hour grid for the selected cities" do
     expect(page).to have_css("[data-time-grid-target='row']", count: 1)
     expect(page).to have_css("[data-time-grid-target='row'] div", minimum: 24)
+    expect(page).to have_css("[data-time-grid-hour]", minimum: 23)
+    expect(page).to have_css("[data-time-grid-hour].font-bold", minimum: 23)
+    expect(page).to have_css("[data-time-grid-period]", minimum: 23)
+    expect(page).to have_css("[data-instant].bg-slate-100", minimum: 6)
+    expect(page.evaluate_script("Array.from(document.querySelectorAll('[data-time-grid-period]')).every((element) => element.classList.contains('block') && element.classList.contains('text-[0.65rem]'))")).to be(true)
     expect(page).to have_content("Tokyo")
   end
 
@@ -96,9 +101,11 @@ RSpec.describe "World Clock", type: :system do
     expect(rows[0].all("[data-instant]").map { |cell| cell["data-instant"] }).to eq(
       rows[1].all("[data-instant]").map { |cell| cell["data-instant"] }
     )
-    expect(rows[1]).to have_text("8:30 PM")
+    expect(rows[1]).to have_text(/\d+:30/)
     expect(rows[1]).to have_text("Sep 19")
     expect(rows[1]).to have_text("Sep 20")
+    expect(rows[1].all("[data-instant]").first).to have_text("Sep 19")
+    expect(rows[1].all("[data-instant]").first).not_to have_text("12 AM")
   end
 
   it "renders missing and repeated hours on transition dates" do
@@ -195,7 +202,7 @@ RSpec.describe "World Clock", type: :system do
 
   it "reviews selected times after choosing one" do
     select_date((Date.current + 2).iso8601)
-    expect(page).to have_text("12 AM")
+    expect(page).to have_css("[data-time-grid-hour]", minimum: 23)
     first("[data-instant]").click
     click_button "Add this time"
     click_button "Close"
@@ -222,7 +229,7 @@ RSpec.describe "World Clock", type: :system do
 
   it "validates selected times from the review modal" do
     select_date((Date.current + 2).iso8601)
-    expect(page).to have_text("12 AM")
+    expect(page).to have_css("[data-time-grid-hour]", minimum: 23)
     first("[data-instant]").click
     click_button "Add this time"
     click_button "Close"
@@ -237,7 +244,7 @@ RSpec.describe "World Clock", type: :system do
 
   it "creates an event from the review modal" do
     select_date((Date.current + 2).iso8601)
-    expect(page).to have_text("12 AM")
+    expect(page).to have_css("[data-time-grid-hour]", minimum: 23)
     first("[data-instant]").click
     click_button "Add this time"
     click_button "Close"
