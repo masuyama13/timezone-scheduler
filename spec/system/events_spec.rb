@@ -88,9 +88,11 @@ RSpec.describe "Shared event", type: :system do
     end
 
     visit event_path(event.public_token)
+    response_section_top = page.evaluate_script("document.querySelector('[aria-labelledby=\"response-heading\"]').getBoundingClientRect().top")
     find('th[data-candidate-share-column-index="0"]').click
 
     expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page.evaluate_script("document.querySelector('[aria-labelledby=\"response-heading\"]').getBoundingClientRect().top")).to eq(response_section_top)
     expect(page).to have_text("Selected time")
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Tokyo")
