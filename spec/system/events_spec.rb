@@ -64,6 +64,38 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Looking forward to it")
   end
 
+  it "opens a candidate time modal with unique local times" do
+    vancouver_response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver")
+    tokyo_response = event.responses.create!(name: "Hana", time_zone: "Asia/Tokyo")
+    event.time_options.order(:starts_at).each do |time_option|
+      vancouver_response.votes.create!(time_option: time_option, availability: :available)
+      tokyo_response.votes.create!(time_option: time_option, availability: :maybe)
+    end
+
+    visit event_path(event.public_token)
+    find('th[data-candidate-share-column-index="0"]').click
+
+    expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page).to have_text("Selected time")
+    expect(page).to have_text("Vancouver")
+    expect(page).to have_text("Tokyo")
+    expect(page).to have_css('textarea[data-candidate-share-target="times"]')
+  end
+
+  it "copies the selected candidate times" do
+    response = event.responses.create!(name: "Hana", time_zone: "Asia/Tokyo")
+    event.time_options.order(:starts_at).each { |time_option| response.votes.create!(time_option: time_option, availability: :available) }
+
+    visit event_path(event.public_token)
+    page.execute_script("navigator.clipboard.writeText = (text) => { window.__copiedText = text; return Promise.resolve(); }")
+    find('th[data-candidate-share-column-index="0"]').click
+    fill_in "Times to share", with: "Vancouver: Custom time\nTokyo: Custom time"
+    click_button "Copy as text"
+
+    expect(page).to have_text("Copied", wait: 5)
+    expect(page.evaluate_script("window.__copiedText")).to eq("Vancouver: Custom time\nTokyo: Custom time")
+  end
+
   it "submits an availability response" do
     click_button "Add your availability"
     fill_in "Name", with: "Alex"
