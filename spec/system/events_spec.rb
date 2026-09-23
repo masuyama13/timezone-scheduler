@@ -24,9 +24,9 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Add your availability")
     expect(page.evaluate_script(<<~JS)).to be(true)
       (() => {
-        const form = document.querySelector('[aria-labelledby="response-heading"]')
+        const form = document.querySelector('[aria-label="Add your availability"]')
         const responses = document.querySelector('[aria-labelledby="responses-heading"]')
-        return Boolean(form && responses && (responses.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING))
+        return Boolean(form && responses && (form.compareDocumentPosition(responses) & Node.DOCUMENT_POSITION_FOLLOWING))
       })()
     JS
     expect(page).to have_text("Choose a time")
@@ -88,11 +88,11 @@ RSpec.describe "Shared event", type: :system do
     end
 
     visit event_path(event.public_token)
-    response_section_top = page.evaluate_script("document.querySelector('[aria-labelledby=\"response-heading\"]').getBoundingClientRect().top")
+    response_section_top = page.evaluate_script("document.querySelector('[aria-label=\"Add your availability\"]').getBoundingClientRect().top")
     find('th[data-candidate-share-column-index="0"]').click
 
     expect(page).to have_css('[role="dialog"]', visible: true)
-    expect(page.evaluate_script("document.querySelector('[aria-labelledby=\"response-heading\"]').getBoundingClientRect().top")).to eq(response_section_top)
+    expect(page.evaluate_script("document.querySelector('[aria-label=\"Add your availability\"]').getBoundingClientRect().top")).to eq(response_section_top)
     expect(page).to have_text("Selected time")
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Tokyo")
