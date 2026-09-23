@@ -10,11 +10,21 @@
   <main class="mx-auto grid max-w-4xl gap-10 px-4 py-6 sm:px-6 sm:py-8">
     <section aria-label="World Clock">
       <div class="flex items-center gap-2">
-        <div class="min-w-0 flex-1 items-center justify-start gap-1" data-time-grid-target="dateControls" hidden>
-          <button type="button" aria-label="Previous day" data-action="time-grid#previousDay" class="shrink-0 rounded-lg px-1.5 py-2 text-sm text-blue-700">←</button>
+        <div class="min-w-0 flex-1 items-center justify-start gap-0.5" data-time-grid-target="dateControls" hidden>
+          <button type="button" aria-label="Previous week" title="Previous week" data-action="time-grid#previousWeek" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-blue-700 hover:text-blue-900">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m11 6-6 6 6 6M18 6l-6 6 6 6" /></svg>
+          </button>
+          <button type="button" aria-label="Previous day" title="Previous day" data-action="time-grid#previousDay" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-blue-700 hover:text-blue-900">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m14 6-6 6 6 6" /></svg>
+          </button>
           <label for="comparison-date" class="sr-only">Comparison date</label>
-          <input id="comparison-date" type="date" data-time-grid-target="dateInput" data-action="change->time-grid#changeDate" class="min-w-0 w-[8rem] max-w-full rounded-lg border border-slate-300 px-1.5 py-2 text-sm sm:w-auto sm:px-2">
-          <button type="button" aria-label="Next day" data-action="time-grid#nextDay" class="shrink-0 rounded-lg px-1.5 py-2 text-sm text-blue-700">→</button>
+          <input id="comparison-date" type="date" data-time-grid-target="dateInput" data-action="change->time-grid#changeDate" class="min-w-0 w-[7rem] max-w-full rounded-lg border border-slate-300 px-1.5 py-2 text-sm sm:w-auto sm:px-2">
+          <button type="button" aria-label="Next day" title="Next day" data-action="time-grid#nextDay" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-blue-700 hover:text-blue-900">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m10 6 6 6-6 6" /></svg>
+          </button>
+          <button type="button" aria-label="Next week" title="Next week" data-action="time-grid#nextWeek" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-blue-700 hover:text-blue-900">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m6 6 6 6-6 6M13 6l6 6-6 6" /></svg>
+          </button>
         </div>
         <button type="button" data-world-clock-target="addCityButton" data-action="click->world-clock#openAdd" class="shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">+ Add city</button>
       </div>

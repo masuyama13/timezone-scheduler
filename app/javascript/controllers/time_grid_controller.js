@@ -102,8 +102,10 @@ export default class extends Controller {
     this.refresh()
   }
 
+  previousWeek() { this.moveDay(-7) }
   previousDay() { this.moveDay(-1) }
   nextDay() { this.moveDay(1) }
+  nextWeek() { this.moveDay(7) }
 
   moveDay(amount) {
     const date = new Date(`${this.selectedDate}T00:00:00Z`)

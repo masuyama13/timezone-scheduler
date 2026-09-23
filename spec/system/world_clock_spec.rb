@@ -85,6 +85,10 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_css("[data-instant]", count: 24)
     select_date("2026-12-31")
     expect(page).to have_css('[data-instant="2026-12-30T15:00:00.000Z"]')
+    find('button[aria-label="Next week"]').click
+    expect(page).to have_field("Comparison date", with: "2027-01-07")
+    find('button[aria-label="Previous week"]').click
+    expect(page).to have_field("Comparison date", with: "2026-12-31")
     find('button[aria-label="Next day"]').click
     expect(page).to have_field("Comparison date", with: "2027-01-01")
     expect(page).to have_css('[data-instant="2026-12-31T15:00:00.000Z"]')
