@@ -70,6 +70,11 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_css("[data-time-grid-target='row']:first-child", text: /Vancouver/)
   end
 
+  it "shows a home icon for the primary city and reveals the pencil on hover" do
+    expect(page).to have_css("button[aria-label='Change your city'] [data-icon='home']")
+    expect(page).to have_css("button[aria-label='Change your city'] [data-icon='pencil']", visible: false)
+  end
+
   it "does not offer removal for the primary city" do
     expect(page).not_to have_css("button[data-action='click->world-clock#removeCity']")
     expect(page).to have_button("Change")

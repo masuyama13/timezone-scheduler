@@ -265,10 +265,26 @@ export default class extends Controller {
     action.className = "w-fit shrink-0 rounded-lg px-1 py-0.5 text-xs font-bold hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
     action.classList.add(city.primary ? "text-blue-700" : "text-slate-400")
     if (city.primary) {
+      action.classList.add("group")
       action.dataset.action = "click->world-clock#openChange"
       action.setAttribute("aria-label", "Change your city")
       action.title = "Change your city"
-      action.append(this.icon("pencil"))
+      const home = this.icon("home")
+      const pencil = this.icon("pencil")
+      pencil.style.display = "none"
+      const showPencil = () => {
+        home.style.display = "none"
+        pencil.style.display = "block"
+      }
+      const showHome = () => {
+        home.style.display = "block"
+        pencil.style.display = "none"
+      }
+      action.addEventListener("mouseenter", showPencil)
+      action.addEventListener("mouseleave", showHome)
+      action.addEventListener("focus", showPencil)
+      action.addEventListener("blur", showHome)
+      action.append(home, pencil)
     } else {
       action.dataset.cityKey = city.key
       action.dataset.action = "click->world-clock#removeCity"
@@ -289,10 +305,13 @@ export default class extends Controller {
   icon(name) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
     svg.setAttribute("viewBox", "0 0 24 24")
-    svg.setAttribute("fill", "none")
-    svg.setAttribute("stroke", "currentColor")
-    svg.setAttribute("stroke-width", "1.8")
+    svg.setAttribute("fill", name === "home" ? "currentColor" : "none")
+    if (name !== "home") {
+      svg.setAttribute("stroke", "currentColor")
+      svg.setAttribute("stroke-width", "1.8")
+    }
     svg.setAttribute("aria-hidden", "true")
+    svg.dataset.icon = name
     svg.classList.add("h-4", "w-4")
 
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
@@ -300,7 +319,9 @@ export default class extends Controller {
     path.setAttribute("stroke-linejoin", "round")
     path.setAttribute("d", name === "pencil"
       ? "m16.862 3.487 3.651 3.651M18.5 2.75a2.121 2.121 0 0 1 3 3L7.5 19.75 3 21l1.25-4.5L18.5 2.75Z"
-      : "m6 7.5 1 12h10l1-12M4.5 7.5h15M9.5 7.5V5h5v2.5M10 11v5M14 11v5")
+      : name === "home"
+        ? "M11.47 3.84a.75.75 0 0 1 1.06 0l8.25 8.25a.75.75 0 0 1-1.06 1.06L19 12.44v7.31a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-4.5h-2v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-7.31l-.72.71a.75.75 0 1 1-1.06-1.06l8.25-8.25Z"
+        : "m6 7.5 1 12h10l1-12M4.5 7.5h15M9.5 7.5V5h5v2.5M10 11v5M14 11v5")
     svg.append(path)
     return svg
   }
