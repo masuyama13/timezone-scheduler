@@ -161,8 +161,9 @@ export default class extends Controller {
         const date = this.localDate(instant, city.timeZone)
         const time = this.formatTime(instant, city.timeZone, true)
         const startsNewDate = date !== previousDate
-        const cellLabel = startsNewDate ? this.formatDate(instant, city.timeZone) : time
-        const cell = this.cell(cellLabel, "min-w-0 cursor-pointer bg-white px-0.5 py-4 text-center text-[0.65rem] text-slate-600")
+        const cell = startsNewDate
+          ? this.cell(this.formatDate(instant, city.timeZone), "min-w-0 cursor-pointer bg-white flex flex-col items-center justify-center px-0.5 py-3 text-center text-[0.65rem] text-slate-600")
+          : this.timeCell(instant, city.timeZone)
         cell.dataset.instant = instant.toISOString()
         cell.dataset.hourIndex = visibleInstants.indexOf(instant).toString()
         cell.dataset.action = "click->time-grid#selectInstant"
@@ -327,16 +328,38 @@ export default class extends Controller {
   }
 
   formatTime(instant, timeZone, compact = false) {
+    const { hour, minute, period } = this.formatTimeParts(instant, timeZone)
+    return compact && minute === "00" ? `${hour} ${period}` : `${hour}:${minute} ${period}`
+  }
+
+  formatTimeParts(instant, timeZone) {
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone,
       hour: "numeric",
       minute: "2-digit",
       hour12: true
     }).formatToParts(instant)
-    const hour = parts.find((part) => part.type === "hour")?.value || ""
-    const minute = parts.find((part) => part.type === "minute")?.value || "00"
-    const period = parts.find((part) => part.type === "dayPeriod")?.value || ""
-    return compact && minute === "00" ? `${hour} ${period}` : `${hour}:${minute} ${period}`
+    return {
+      hour: parts.find((part) => part.type === "hour")?.value || "",
+      minute: parts.find((part) => part.type === "minute")?.value || "00",
+      period: parts.find((part) => part.type === "dayPeriod")?.value || ""
+    }
+  }
+
+  timeCell(instant, timeZone) {
+    const cell = document.createElement("div")
+    cell.className = "min-w-0 cursor-pointer bg-white flex flex-col items-center justify-center px-0.5 py-3 text-center text-slate-600"
+    const { hour, minute, period } = this.formatTimeParts(instant, timeZone)
+    const number = document.createElement("span")
+    number.dataset.timeGridHour = ""
+    number.className = "block text-base font-bold leading-none"
+    number.textContent = minute === "00" ? hour : `${hour}:${minute}`
+    const dayPeriod = document.createElement("span")
+    dayPeriod.dataset.timeGridPeriod = ""
+    dayPeriod.className = "block text-[0.65rem] leading-none"
+    dayPeriod.textContent = period
+    cell.append(number, dayPeriod)
+    return cell
   }
 
   cell(text, className) {
