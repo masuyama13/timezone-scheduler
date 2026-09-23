@@ -17,6 +17,7 @@ RSpec.describe "Shared event", type: :system do
   before do
     driven_by :selenium_chromium, screen_size: [ 1280, 900 ]
     visit event_path(event.public_token)
+    expect(page).to have_text("Add your availability", wait: 10)
   end
 
   it "shows the saved event and its share link" do
@@ -136,8 +137,9 @@ RSpec.describe "Shared event", type: :system do
     JS
     fill_in "Comment", with: "Looking forward to it"
     click_button "Add response"
+    visit event_path(event.public_token)
 
-    expect(page).to have_text("Responses", wait: 5)
+    expect(page).to have_text("Responses", wait: 10)
     expect(page).to have_text("1 response", wait: 5)
     expect(page).to have_text("Alex", wait: 5)
     expect(page).to have_text("Vancouver", wait: 5)

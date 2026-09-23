@@ -115,7 +115,7 @@ export default class extends Controller {
       this.createStatusTarget.textContent = "Event created. Share this event:"
       const eventUrl = new URL(`/events/${data.public_token}`, window.location.origin).toString()
       const link = document.createElement("a")
-      link.className = "break-all text-sm font-bold text-blue-700 underline"
+      link.className = "break-all text-sm font-bold text-brand-700 underline"
       link.href = eventUrl
       link.textContent = eventUrl
       const copy = document.createElement("button")
@@ -135,7 +135,7 @@ export default class extends Controller {
       linkRow.className = "flex items-center gap-2"
       linkRow.append(link, copy)
       const open = document.createElement("a")
-      open.className = "mt-3 block w-full rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-bold text-white hover:bg-blue-800"
+      open.className = "mt-3 block w-full rounded-lg bg-brand-700 px-3 py-2 text-center text-sm font-bold text-white hover:bg-brand-800"
       open.href = eventUrl
       open.textContent = "View event"
       result.append(linkRow, open)
@@ -238,7 +238,7 @@ export default class extends Controller {
     const alreadySelected = this.candidates.some((candidate) => candidate.instant === instant)
     const add = document.createElement("button")
     add.type = "button"
-    add.className = "mt-3 w-full rounded-lg bg-blue-700 px-3 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+    add.className = "mt-3 w-full rounded-lg bg-brand-700 px-3 py-2 text-sm font-bold text-white hover:bg-brand-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
     add.textContent = alreadySelected ? "Already selected" : "Add this time"
     add.disabled = alreadySelected || this.candidates.length >= 10
     add.dataset.action = "click->candidate-times#addCandidate"

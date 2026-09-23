@@ -39,7 +39,7 @@
           <span class="min-w-0 truncate" data-event-response-target="timeZoneLabel"></span>
           <label for="response-time-zone" class="sr-only">Your time zone</label>
           <select id="response-time-zone" name="time_zone" required data-event-response-target="timeZone" class="sr-only"></select>
-          <button type="button" aria-label="Change time zone" title="Change time zone" data-event-response-target="timeZoneButton" data-action="click->event-response#openTimeZoneSearch" class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-blue-700">
+          <button type="button" aria-label="Change time zone" title="Change time zone" data-event-response-target="timeZoneButton" data-action="click->event-response#openTimeZoneSearch" class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-brand-700">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="m4 16.5-.75 3.75L7 19.5 18.5 8a2.121 2.121 0 0 0-3-3L4 16.5Z" />
               <path stroke-linecap="round" d="m14 6 4 4" />
@@ -47,14 +47,18 @@
           </button>
         </div>
       </div>
-      <button type="button" data-action="click->event-response#openCreate" class="w-full rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 sm:w-fit">Add your availability</button>
+      <button type="button" data-action="click->event-response#openCreate" class="w-full rounded-lg bg-brand-700 px-4 py-2 text-sm font-bold text-white hover:bg-brand-800 sm:w-fit">Add your availability</button>
       <div data-event-response-target="timeZoneDialog" role="dialog" aria-modal="true" aria-labelledby="response-time-zone-heading" hidden>
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div class="absolute inset-0 bg-slate-950/50" data-action="click->event-response#closeTimeZoneSearch"></div>
           <div class="relative z-10 h-[28rem] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h3 id="response-time-zone-heading" class="text-lg font-bold">Search cities</h3>
-              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50" data-action="click->event-response#closeTimeZoneSearch">×</button>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50" data-action="click->event-response#closeTimeZoneSearch">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                  <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
             <label for="response-time-zone-search" class="mt-5 block text-sm font-bold">City or country</label>
             <input id="response-time-zone-search" type="search" autocomplete="off" placeholder="Tokyo or Canada" data-event-response-target="timeZoneSearch" data-action="input->event-response#searchTimeZones" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3">
@@ -69,7 +73,11 @@
           <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h2 id="availability-modal-heading" data-event-response-target="modalTitle" class="text-xl font-bold">Add your availability</h2>
-              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50" data-action="click->event-response#closeResponseModal">×</button>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50" data-action="click->event-response#closeResponseModal">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                  <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
             <form data-event-response-target="form" data-action="submit->event-response#submit" class="mt-5 grid gap-4">
               <div class="grid gap-2">
@@ -86,7 +94,7 @@
                     <p class="min-w-0 text-sm font-bold" data-event-response-target="optionDate" data-instant="<%= time_option.starts_at.iso8601 %>"><%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%a, %b %-d, %Y, %-I:%M %p") %></p>
                     <div class="grid grid-cols-3 gap-1.5">
                       <% [["available", "✓"], ["maybe", "?"], ["unavailable", "×"]].each do |value, icon| %>
-                        <label class="group flex h-12 cursor-pointer items-center justify-center rounded-lg border border-slate-300 bg-white text-xl font-bold text-slate-700 transition hover:border-blue-500 hover:bg-blue-50 has-[:checked]:border-blue-700 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700">
+                        <label class="group flex h-12 cursor-pointer items-center justify-center rounded-lg border border-slate-300 bg-white text-xl font-bold text-slate-700 transition hover:border-brand-500 hover:bg-brand-50 has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-700">
                           <input class="peer sr-only" type="radio" name="availability-<%= time_option.id %>" value="<%= value %>" aria-label="<%= value.humanize %>" required>
                           <span aria-hidden="true"><%= icon %></span>
                           <span class="sr-only"><%= value.humanize %></span>
@@ -100,7 +108,7 @@
                 <label for="response-comment" class="text-sm font-bold">Comment <span class="font-normal text-slate-500">(optional)</span></label>
                 <textarea id="response-comment" name="comment" rows="2" maxlength="400" data-event-response-target="comment" class="rounded-lg border border-slate-300 px-3 py-2"></textarea>
               </div>
-              <button type="submit" data-event-response-target="submit" class="w-full rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-wait disabled:opacity-60"><span data-event-response-target="submitLabel">Add response</span></button>
+              <button type="submit" data-event-response-target="submit" class="w-full rounded-lg bg-brand-700 px-4 py-2 text-sm font-bold text-white hover:bg-brand-800 disabled:cursor-wait disabled:opacity-60"><span data-event-response-target="submitLabel">Add response</span></button>
               <button type="button" data-event-response-target="deleteButton" data-action="click->event-response#deleteResponse" hidden class="w-full rounded-lg border border-red-200 px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-50 disabled:cursor-wait disabled:opacity-60">Delete response</button>
               <p data-event-response-target="status" role="status" class="text-sm text-amber-700"></p>
             </form>
@@ -124,7 +132,7 @@
               <tr class="border-b border-slate-200 text-slate-700">
                 <th scope="col" class="<%= name_column_class %> break-words px-2 py-4 text-center text-sm font-bold">Name</th>
                 <% @event.time_options.order(:starts_at).each_with_index do |time_option, index| %>
-                  <th scope="col" tabindex="0" role="button" aria-label="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-3 text-center text-xs font-bold transition-colors focus:bg-blue-50 focus:outline-none">
+                  <th scope="col" tabindex="0" role="button" aria-label="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-3 text-center text-xs font-bold transition-colors focus:bg-brand-50 focus:outline-none">
                     <span data-event-response-target="responseDate" data-instant="<%= time_option.starts_at.iso8601 %>"><%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %></span>
                   </th>
                 <% end %>
@@ -137,14 +145,14 @@
                 <tr class="border-b border-slate-200 last:border-b-0">
                   <th scope="row" class="break-all px-2 py-4 text-center align-middle text-sm font-bold sm:break-words">
                     <% response_choices = response.votes.each_with_object({}) { |vote, choices| choices[vote.time_option_id] = vote.availability } %>
-                    <button type="button" data-action="click->event-response#edit" data-response-id="<%= response.id %>" data-response-name="<%= response.name %>" data-response-time-zone="<%= response.time_zone %>" data-response-comment="<%= response.comment %>" data-response-choices="<%= json_escape(response_choices.to_json) %>" class="group block min-w-0 max-w-full cursor-pointer text-left text-slate-900 hover:text-blue-700">
+                    <button type="button" data-action="click->event-response#edit" data-response-id="<%= response.id %>" data-response-name="<%= response.name %>" data-response-time-zone="<%= response.time_zone %>" data-response-comment="<%= response.comment %>" data-response-choices="<%= json_escape(response_choices.to_json) %>" class="group block min-w-0 max-w-full cursor-pointer text-left text-slate-900 hover:text-brand-700">
                       <span class="block"><%= response.name %></span>
-                      <span class="mt-1 block text-xs font-normal text-slate-500 group-hover:text-blue-700"><%= city_name_for_time_zone(response.time_zone) %></span>
+                      <span class="mt-1 block text-xs font-normal text-slate-500 group-hover:text-brand-700"><%= city_name_for_time_zone(response.time_zone) %></span>
                     </button>
                   </th>
                   <% @event.time_options.order(:starts_at).each_with_index do |time_option, index| %>
                     <% vote = votes_by_time_option[time_option.id] %>
-                    <td tabindex="0" role="button" aria-label="<%= availability_label(vote&.availability) %>" title="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-4 text-center text-xl font-bold transition-colors focus:bg-blue-50 focus:outline-none">
+                    <td tabindex="0" role="button" aria-label="<%= availability_label(vote&.availability) %>" title="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-4 text-center text-xl font-bold transition-colors focus:bg-brand-50 focus:outline-none">
                       <%= availability_symbol(vote&.availability) %>
                     </td>
                   <% end %>
@@ -158,7 +166,7 @@
                 <% time_options.each_with_index do |time_option, index| %>
                   <% available_count = available_counts.fetch(time_option.id) %>
                   <% count_weight = maximum_available&.positive? && available_count == maximum_available ? "font-bold" : "font-normal" %>
-                  <td tabindex="0" role="button" aria-label="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-4 text-center text-lg <%= count_weight %> transition-colors focus:bg-blue-50 focus:outline-none"><%= available_count %></td>
+                  <td tabindex="0" role="button" aria-label="Select <%= time_option.starts_at.in_time_zone(@event.time_zone).strftime("%b %-d, %Y, %-I:%M %p") %>" data-candidate-share-column-index="<%= index %>" data-instant="<%= time_option.starts_at.iso8601 %>" data-action="mouseenter->candidate-share#highlightColumn mouseleave->candidate-share#unhighlightColumn focus->candidate-share#highlightColumn blur->candidate-share#unhighlightColumn click->candidate-share#select keydown->candidate-share#activate" class="<%= date_column_class %> cursor-pointer border-l border-slate-200 px-1 py-4 text-center text-lg <%= count_weight %> transition-colors focus:bg-brand-50 focus:outline-none"><%= available_count %></td>
                 <% end %>
                 <td class="border-l border-slate-200"></td>
               </tr>
@@ -170,13 +178,13 @@
         <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
           <div class="flex items-center justify-between gap-4">
             <h2 id="candidate-share-heading" class="text-xl font-bold">Selected time</h2>
-            <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50" data-action="click->candidate-share#close">×</button>
+            <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50" data-action="click->candidate-share#close">×</button>
           </div>
           <p data-candidate-share-target="date" class="mt-5 text-lg font-bold text-slate-900"></p>
           <label for="candidate-share-text" class="sr-only">Times to share</label>
           <textarea id="candidate-share-text" data-candidate-share-target="times" rows="4" class="mt-4 w-full resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700"></textarea>
           <div class="relative mt-6">
-            <button type="button" data-candidate-share-target="copy" data-action="click->candidate-share#copy" class="w-full rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-wait disabled:opacity-60">Copy as text</button>
+            <button type="button" data-candidate-share-target="copy" data-action="click->candidate-share#copy" class="w-full rounded-lg bg-brand-700 px-4 py-2 text-sm font-bold text-white hover:bg-brand-800 disabled:cursor-wait disabled:opacity-60">Copy as text</button>
             <p data-candidate-share-target="status" role="status" class="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-xs text-white opacity-0 shadow-lg"></p>
           </div>
         </div>

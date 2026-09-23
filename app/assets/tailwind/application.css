@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+:root {
+  --theme-brand-50: #eff6ff;
+  --theme-brand-200: #bfdbfe;
+  --theme-brand-500: #3b82f6;
+  --theme-brand-600: #2563eb;
+  --theme-brand-700: #1d4ed8;
+  --theme-brand-800: #1e40af;
+  --theme-brand-900: #1e3a8a;
+}
+
+@theme inline {
+  --color-brand-50: var(--theme-brand-50);
+  --color-brand-200: var(--theme-brand-200);
+  --color-brand-500: var(--theme-brand-500);
+  --color-brand-600: var(--theme-brand-600);
+  --color-brand-700: var(--theme-brand-700);
+  --color-brand-800: var(--theme-brand-800);
+  --color-brand-900: var(--theme-brand-900);
+}
+@layer base {
+  a,
+  button,
+  summary,
+  [role="button"] {
+    cursor: pointer;
+  }
+}

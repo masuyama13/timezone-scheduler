@@ -1,22 +1,32 @@
 <% content_for :title, "World Clock | Timezone Scheduler" %>
 
-<div class="min-h-screen bg-slate-50 text-slate-900" data-controller="world-clock time-grid candidate-times" data-time-grid-url-value="<%= world_clock_timeline_path %>" data-candidate-times-url-value="<%= world_clock_time_resolution_path %>" data-candidate-times-review-url-value="<%= world_clock_candidate_review_path %>">
+<div class="min-h-screen min-w-0 overflow-x-hidden bg-slate-50 text-slate-900" data-controller="world-clock time-grid candidate-times" data-time-grid-url-value="<%= world_clock_timeline_path %>" data-candidate-times-url-value="<%= world_clock_time_resolution_path %>" data-candidate-times-review-url-value="<%= world_clock_candidate_review_path %>">
   <header class="border-b border-slate-200 bg-slate-50">
     <div class="mx-auto flex h-12 max-w-4xl items-center px-4 sm:px-6">
       <h1 class="text-base font-bold tracking-tight sm:text-lg">Timezone Scheduler</h1>
     </div>
   </header>
 
-  <main class="mx-auto grid max-w-4xl gap-10 px-4 py-6 sm:px-6 sm:py-8">
-    <section aria-label="World Clock">
-      <div class="flex items-center gap-2">
-        <div class="min-w-0 flex-1 items-center justify-start gap-1" data-time-grid-target="dateControls" hidden>
-          <button type="button" aria-label="Previous day" data-action="time-grid#previousDay" class="shrink-0 rounded-lg px-1.5 py-2 text-sm text-blue-700">←</button>
+  <main class="mx-auto grid min-w-0 max-w-4xl gap-10 px-4 py-6 sm:px-6 sm:py-8">
+    <section class="min-w-0" aria-label="World Clock">
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="min-w-fit flex-[1_0_auto] items-center justify-start gap-0.5" data-time-grid-target="dateControls" hidden>
+          <button type="button" aria-label="Previous week" title="Previous week" data-action="time-grid#previousWeek" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-brand-700 hover:text-brand-900">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m11 6-6 6 6 6M18 6l-6 6 6 6" /></svg>
+          </button>
+          <button type="button" aria-label="Previous day" title="Previous day" data-action="time-grid#previousDay" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-brand-700 hover:text-brand-900">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m14 6-6 6 6 6" /></svg>
+          </button>
           <label for="comparison-date" class="sr-only">Comparison date</label>
-          <input id="comparison-date" type="date" data-time-grid-target="dateInput" data-action="change->time-grid#changeDate" class="min-w-0 w-[8rem] max-w-full rounded-lg border border-slate-300 px-1.5 py-2 text-sm sm:w-auto sm:px-2">
-          <button type="button" aria-label="Next day" data-action="time-grid#nextDay" class="shrink-0 rounded-lg px-1.5 py-2 text-sm text-blue-700">→</button>
+          <input id="comparison-date" type="date" data-time-grid-target="dateInput" data-action="change->time-grid#changeDate" class="w-[9rem] shrink-0 rounded-lg border border-slate-300 px-1.5 py-2 text-sm sm:w-auto sm:px-2">
+          <button type="button" aria-label="Next day" title="Next day" data-action="time-grid#nextDay" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-brand-700 hover:text-brand-900">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m10 6 6 6-6 6" /></svg>
+          </button>
+          <button type="button" aria-label="Next week" title="Next week" data-action="time-grid#nextWeek" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-brand-700 hover:text-brand-900">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m6 6 6 6-6 6M13 6l6 6-6 6" /></svg>
+          </button>
         </div>
-        <button type="button" data-world-clock-target="addCityButton" data-action="click->world-clock#openAdd" class="shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">+ Add city</button>
+        <button type="button" data-world-clock-target="addCityButton" data-action="click->world-clock#openAdd" class="ml-auto shrink-0 rounded-lg bg-brand-700 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">+ Add city</button>
       </div>
 
       <div class="w-full text-right">
@@ -24,12 +34,12 @@
       </div>
       <p class="pt-2 text-sm text-amber-700" data-world-clock-target="message" role="status" hidden></p>
       <p data-time-grid-target="status" role="status" class="text-sm text-amber-700"></p>
-      <button type="button" data-time-grid-target="retry" data-action="time-grid#refresh" class="rounded-lg px-3 py-2 text-sm text-blue-700" hidden>Retry</button>
+      <button type="button" data-time-grid-target="retry" data-action="time-grid#refresh" class="rounded-lg px-3 py-2 text-sm text-brand-700" hidden>Retry</button>
       <div class="mb-3 flex items-center justify-between gap-2" data-time-grid-target="navigation" hidden></div>
-      <div class="mt-4" data-time-grid-target="grid" aria-live="polite"></div>
+      <div class="mt-4 min-w-0" data-time-grid-target="grid" aria-live="polite"></div>
 
       <div class="mt-4 flex items-center justify-between gap-3">
-        <button type="button" class="ml-auto rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800" data-action="click->candidate-times#planMeeting">Plan an event</button>
+        <button type="button" class="ml-auto rounded-lg bg-brand-700 px-4 py-2 text-sm font-bold text-white hover:bg-brand-800" data-action="click->candidate-times#planMeeting">Plan an event</button>
       </div>
       <p data-candidate-times-target="planStatus" role="status" class="mt-2 text-sm text-amber-700"></p>
 
@@ -47,7 +57,7 @@
           <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h3 id="review-times-heading" class="text-lg font-bold">Plan an event</h3>
-              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="click->candidate-times#closeReview">
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500" data-action="click->candidate-times#closeReview">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
                   <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
                 </svg>
@@ -65,7 +75,7 @@
                 </div>
               </div>
               <p class="mt-4 text-xs text-slate-500">By creating this event, you agree to the Terms of Service.</p>
-              <button type="submit" data-candidate-times-target="createButton" class="mt-3 w-full rounded-lg bg-blue-700 px-3 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-wait disabled:opacity-60">Create</button>
+              <button type="submit" data-candidate-times-target="createButton" class="mt-3 w-full rounded-lg bg-brand-700 px-3 py-2 text-sm font-bold text-white hover:bg-brand-800 disabled:cursor-wait disabled:opacity-60">Create</button>
             </form>
             <p data-candidate-times-target="createStatus" role="status" class="mt-3 text-sm text-amber-700"></p>
             <div data-candidate-times-target="createResult" class="mt-3"></div>
@@ -81,7 +91,7 @@
           <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h3 id="candidate-time-heading" class="text-lg font-bold">Choose a time</h3>
-              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="click->candidate-times#close">
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500" data-action="click->candidate-times#close">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
                   <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
                 </svg>
@@ -109,14 +119,14 @@
           <div class="relative z-10 h-[28rem] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h3 id="city-search-heading" class="text-lg font-bold">Search cities</h3>
-              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" data-action="click->world-clock#closeSearch">
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500" data-action="click->world-clock#closeSearch">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
                   <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
                 </svg>
               </button>
             </div>
             <label for="city-search-input" class="mt-5 block text-sm font-bold">City or country</label>
-            <input id="city-search-input" type="search" autocomplete="off" placeholder="Tokyo or Canada" data-world-clock-target="searchInput" data-action="input->world-clock#search" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200">
+            <input id="city-search-input" type="search" autocomplete="off" placeholder="Tokyo or Canada" data-world-clock-target="searchInput" data-action="input->world-clock#search" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-200">
             <div class="mt-3 grid gap-2" data-world-clock-target="searchResults" aria-live="polite"></div>
           </div>
         </div>

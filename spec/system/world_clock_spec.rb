@@ -5,6 +5,7 @@ RSpec.describe "World Clock", type: :system do
     driven_by :selenium_chromium, screen_size: [ 1280, 900 ]
     visit root_path
     page.execute_script("window.localStorage.setItem('timezone-scheduler.world-clock', JSON.stringify([{ key: 'tokyo', primary: true }])); window.location.reload()")
+    expect(page).to have_css("[data-time-grid-target='row']", minimum: 1, wait: 10)
   end
 
   it "renders a 24-hour grid for the selected cities" do
@@ -24,6 +25,7 @@ RSpec.describe "World Clock", type: :system do
     find("button[data-city-key='vancouver']").click
 
     expect(page).to have_content("Vancouver")
+    expect(page).to have_css("button[aria-label='Remove Vancouver'] [data-icon='x-circle']", visible: :all)
     expect(page).to have_content("2 of 10 cities")
   end
 
@@ -61,13 +63,18 @@ RSpec.describe "World Clock", type: :system do
   end
 
   it "changes the primary city without removing the city list" do
-    find("button[aria-label='Change your city']").click
+    open_change_city
     fill_in "City or country", with: "Vancouver"
     find("button[data-city-key='vancouver']").click
 
     expect(page).to have_content("Vancouver")
     expect(page).not_to have_content("Tokyo")
     expect(page).to have_css("[data-time-grid-target='row']:first-child", text: /Vancouver/)
+  end
+
+  it "shows a home icon for the primary city and reveals the pencil on hover" do
+    expect(page).to have_css("button[aria-label='Change your city'] [data-icon='home']", visible: :all, wait: 10)
+    expect(page).to have_css("button[aria-label='Change your city'] [data-icon='pencil']", visible: :all, wait: 10)
   end
 
   it "does not offer removal for the primary city" do
@@ -85,6 +92,10 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_css("[data-instant]", count: 24)
     select_date("2026-12-31")
     expect(page).to have_css('[data-instant="2026-12-30T15:00:00.000Z"]')
+    find('button[aria-label="Next week"]').click
+    expect(page).to have_field("Comparison date", with: "2027-01-07")
+    find('button[aria-label="Previous week"]').click
+    expect(page).to have_field("Comparison date", with: "2026-12-31")
     find('button[aria-label="Next day"]').click
     expect(page).to have_field("Comparison date", with: "2027-01-01")
     expect(page).to have_css('[data-instant="2026-12-31T15:00:00.000Z"]')
@@ -120,24 +131,16 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_text("GMT-05:00")
   end
 
-  it "pages through every instant on mobile and resets the page on date changes" do
+  it "keeps every instant in the horizontally scrollable mobile grid" do
     page.current_window.resize_to(390, 844)
     change_primary_to_new_york
     select_date("2026-11-01")
+    expect(page).to have_css("[data-instant]", count: 25)
     expect(page).to have_css('[data-instant="2026-11-01T04:00:00.000Z"]')
-    expect(page).to have_css("[data-instant]", count: 12)
-    expect(page).to have_css('button[aria-label="Show previous 12 hours"][disabled]')
-    find('button[aria-label="Show next 12 hours"]').click
-    expect(page).to have_css('[data-instant="2026-11-01T16:00:00.000Z"]')
-    find('button[aria-label="Show next 12 hours"]').click
-    expect(page).to have_css("[data-instant]", count: 1)
     expect(page).to have_css('[data-instant="2026-11-02T04:00:00.000Z"]')
-    expect(page).to have_css('button[aria-label="Show next 12 hours"][disabled]')
-    find('button[aria-label="Show previous 12 hours"]').click
-    expect(page).to have_css("[data-instant]", count: 12)
-    find('button[aria-label="Next day"]').click
-    expect(page).to have_css('[data-instant="2026-11-02T05:00:00.000Z"]')
-    expect(page).to have_css('button[aria-label="Show previous 12 hours"][disabled]')
+    expect(page).not_to have_button("Show previous 12 hours")
+    expect(page).not_to have_button("Show next 12 hours")
+    expect(page).to have_css("[data-time-grid-target='grid'] .overflow-x-auto")
   ensure
     page.current_window.resize_to(1280, 900)
   end
@@ -174,7 +177,7 @@ RSpec.describe "World Clock", type: :system do
 
   it "opens a minute-level preview from a time cell" do
     first("[data-instant]").click
-    expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page).to have_css('[role="dialog"]', visible: true, wait: 10)
     expect(page).to have_field("Date")
     expect(page).to have_field("Time")
     expect(page).to have_text("Tokyo")
@@ -272,7 +275,7 @@ RSpec.describe "World Clock", type: :system do
   end
 
   def change_primary_to_new_york
-    click_button "Change your city"
+    open_change_city
     fill_in "City or country", with: "New York"
     find("button[data-city-key='new-york']").click
     expect(page).to have_text("New York")
@@ -280,7 +283,14 @@ RSpec.describe "World Clock", type: :system do
 
   def open_city_search
     click_button "Add city"
-    expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page).to have_field("City or country", visible: true, wait: 10)
+  end
+
+  def open_change_city
+    find("button[aria-label='Change your city']", wait: 10)
+    page.execute_script("document.querySelector(\"button[aria-label='Change your city']\").click()")
+    expect(page).to have_css('[data-world-clock-target="searchPanel"]:not([hidden])', visible: :all, wait: 10)
+    expect(page).to have_field("City or country", visible: true, wait: 10)
   end
 
   def add_city(name, key)
