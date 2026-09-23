@@ -35,9 +35,9 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_button("Copy event link")
     expect(page).to have_button("Vancouver (America/Vancouver)")
     click_button "Vancouver (America/Vancouver)"
-    fill_in "City or country", with: "Tokyo"
-    click_button "Tokyo"
-    expect(page).to have_button("Tokyo (Asia/Tokyo)")
+    fill_in "City or country", with: "Nairobi"
+    click_button "Nairobi"
+    expect(page).to have_button("Nairobi (Africa/Nairobi)")
     click_button "Add your availability"
     expect(page).to have_text(/\b[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2}, \d{4}, \d{1,2}:\d{2} [AP]M\b/)
     expect(page).to have_css('textarea#response-comment[rows="2"]')
@@ -46,6 +46,20 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_css("tfoot td.font-normal", count: event.time_options.count)
   end
 
+
+  it "matches browser timezone aliases when choosing a response timezone" do
+    result = page.evaluate_async_script(<<~JS)
+      const done = arguments[0]
+      import("time_zone_utils").then(({ findCatalogTimeZone }) => {
+        done(findCatalogTimeZone([
+          { timeZone: "Asia/Kolkata" },
+          { timeZone: "Asia/Tokyo" }
+        ], "Asia/Calcutta"))
+      })
+    JS
+
+    expect(result).to eq("Asia/Kolkata")
+  end
 
   it "keeps long response names inside the name column" do
     response = event.responses.create!(name: "Honobonononononononononononono", time_zone: "America/Vancouver")
@@ -166,6 +180,14 @@ RSpec.describe "Shared event", type: :system do
       click_button "Delete response"
     end
 
+    Timeout.timeout(5) do
+      loop do
+        break unless event.reload.responses.exists?
+        sleep 0.1
+      end
+    end
+
+    visit event_path(event.public_token)
     expect(page).to have_text("No responses yet.", wait: 5)
   end
 
