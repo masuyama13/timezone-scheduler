@@ -13,6 +13,7 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_css("[data-time-grid-hour]", minimum: 23)
     expect(page).to have_css("[data-time-grid-hour].font-bold", minimum: 23)
     expect(page).to have_css("[data-time-grid-period]", minimum: 23)
+    expect(page).to have_css("[data-instant].bg-slate-100", minimum: 6)
     expect(page.evaluate_script("Array.from(document.querySelectorAll('[data-time-grid-period]')).every((element) => element.classList.contains('block') && element.classList.contains('text-[0.65rem]'))")).to be(true)
     expect(page).to have_content("Tokyo")
   end

@@ -162,7 +162,7 @@ export default class extends Controller {
         const time = this.formatTime(instant, city.timeZone, true)
         const startsNewDate = date !== previousDate
         const cell = startsNewDate
-          ? this.cell(this.formatDate(instant, city.timeZone), "min-w-0 cursor-pointer bg-white flex flex-col items-center justify-center px-0.5 py-3 text-center text-[0.65rem] text-slate-600")
+          ? this.cell(this.formatDate(instant, city.timeZone), `min-w-0 cursor-pointer ${this.timeCellBackground(instant, city.timeZone)} flex flex-col items-center justify-center px-0.5 py-3 text-center text-[0.65rem] text-slate-600`)
           : this.timeCell(instant, city.timeZone)
         cell.dataset.instant = instant.toISOString()
         cell.dataset.hourIndex = visibleInstants.indexOf(instant).toString()
@@ -346,9 +346,18 @@ export default class extends Controller {
     }
   }
 
+  timeCellBackground(instant, timeZone) {
+    const hour = Number(new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hour: "numeric",
+      hourCycle: "h23"
+    }).format(instant))
+    return hour < 6 ? "bg-slate-100" : "bg-white"
+  }
+
   timeCell(instant, timeZone) {
     const cell = document.createElement("div")
-    cell.className = "min-w-0 cursor-pointer bg-white flex flex-col items-center justify-center px-0.5 py-3 text-center text-slate-600"
+    cell.className = `min-w-0 cursor-pointer ${this.timeCellBackground(instant, timeZone)} flex flex-col items-center justify-center px-0.5 py-3 text-center text-slate-600`
     const { hour, minute, period } = this.formatTimeParts(instant, timeZone)
     const number = document.createElement("span")
     number.dataset.timeGridHour = ""
