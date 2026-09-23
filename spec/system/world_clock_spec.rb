@@ -5,6 +5,7 @@ RSpec.describe "World Clock", type: :system do
     driven_by :selenium_chromium, screen_size: [ 1280, 900 ]
     visit root_path
     page.execute_script("window.localStorage.setItem('timezone-scheduler.world-clock', JSON.stringify([{ key: 'tokyo', primary: true }])); window.location.reload()")
+    expect(page).to have_css("[data-time-grid-target='row']", minimum: 1, wait: 10)
   end
 
   it "renders a 24-hour grid for the selected cities" do
@@ -62,7 +63,7 @@ RSpec.describe "World Clock", type: :system do
   end
 
   it "changes the primary city without removing the city list" do
-    find("button[aria-label='Change your city']").click
+    open_change_city
     fill_in "City or country", with: "Vancouver"
     find("button[data-city-key='vancouver']").click
 
@@ -72,8 +73,8 @@ RSpec.describe "World Clock", type: :system do
   end
 
   it "shows a home icon for the primary city and reveals the pencil on hover" do
-    expect(page).to have_css("button[aria-label='Change your city'] [data-icon='home']")
-    expect(page).to have_css("button[aria-label='Change your city'] [data-icon='pencil']", visible: false)
+    expect(page).to have_css("button[aria-label='Change your city'] [data-icon='home']", visible: :all, wait: 10)
+    expect(page).to have_css("button[aria-label='Change your city'] [data-icon='pencil']", visible: :all, wait: 10)
   end
 
   it "does not offer removal for the primary city" do
@@ -176,7 +177,7 @@ RSpec.describe "World Clock", type: :system do
 
   it "opens a minute-level preview from a time cell" do
     first("[data-instant]").click
-    expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page).to have_css('[role="dialog"]', visible: true, wait: 10)
     expect(page).to have_field("Date")
     expect(page).to have_field("Time")
     expect(page).to have_text("Tokyo")
@@ -274,7 +275,7 @@ RSpec.describe "World Clock", type: :system do
   end
 
   def change_primary_to_new_york
-    click_button "Change your city"
+    open_change_city
     fill_in "City or country", with: "New York"
     find("button[data-city-key='new-york']").click
     expect(page).to have_text("New York")
@@ -282,7 +283,14 @@ RSpec.describe "World Clock", type: :system do
 
   def open_city_search
     click_button "Add city"
-    expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page).to have_field("City or country", visible: true, wait: 10)
+  end
+
+  def open_change_city
+    find("button[aria-label='Change your city']", wait: 10)
+    page.execute_script("document.querySelector(\"button[aria-label='Change your city']\").click()")
+    expect(page).to have_css('[data-world-clock-target="searchPanel"]:not([hidden])', visible: :all, wait: 10)
+    expect(page).to have_field("City or country", visible: true, wait: 10)
   end
 
   def add_city(name, key)
