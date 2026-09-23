@@ -24,9 +24,9 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Add your availability")
     expect(page.evaluate_script(<<~JS)).to be(true)
       (() => {
-        const form = document.querySelector('[aria-labelledby="response-heading"]')
+        const form = document.querySelector('[aria-label="Add your availability"]')
         const responses = document.querySelector('[aria-labelledby="responses-heading"]')
-        return Boolean(form && responses && (responses.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING))
+        return Boolean(form && responses && (form.compareDocumentPosition(responses) & Node.DOCUMENT_POSITION_FOLLOWING))
       })()
     JS
     expect(page).to have_text("Choose a time")
@@ -43,8 +43,21 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_css('textarea#response-comment[rows="2"]')
     expect(page).to have_text("This page and its responses may be deleted after one year.")
     expect(page).to have_text("No responses yet.")
+    expect(page).to have_css("tfoot td.font-normal", count: event.time_options.count)
   end
 
+
+  it "keeps long response names inside the name column" do
+    response = event.responses.create!(name: "Honobonononononononononononono", time_zone: "America/Vancouver")
+    event.time_options.order(:starts_at).each do |time_option|
+      response.votes.create!(time_option: time_option, availability: :available)
+    end
+
+    visit event_path(event.public_token)
+
+    expect(page).to have_css("th[scope=\"row\"].break-all")
+    expect(page).to have_css("tfoot th[scope=\"row\"].text-center", text: "Available")
+  end
 
   it "shows response counts and details" do
     response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver", comment: "Looking forward to it")
@@ -62,6 +75,8 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Alex")
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Looking forward to it")
+    expect(page).to have_css("tfoot td[data-candidate-share-column-index=\"0\"].font-bold")
+    expect(page).to have_css("tfoot td[data-candidate-share-column-index=\"1\"].font-normal")
   end
 
   it "opens a candidate time modal with unique local times" do
@@ -73,9 +88,11 @@ RSpec.describe "Shared event", type: :system do
     end
 
     visit event_path(event.public_token)
+    response_section_top = page.evaluate_script("document.querySelector('[aria-label=\"Add your availability\"]').getBoundingClientRect().top")
     find('th[data-candidate-share-column-index="0"]').click
 
     expect(page).to have_css('[role="dialog"]', visible: true)
+    expect(page.evaluate_script("document.querySelector('[aria-label=\"Add your availability\"]').getBoundingClientRect().top")).to eq(response_section_top)
     expect(page).to have_text("Selected time")
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Tokyo")
