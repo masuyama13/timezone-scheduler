@@ -33,11 +33,11 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Tokyo")
     expect(page).to have_button("Copy event link")
-    expect(page).to have_button("Vancouver (America/Vancouver)")
-    click_button "Vancouver (America/Vancouver)"
+    expect(page).to have_text("Vancouver (America/Vancouver)")
+    click_button "Change time zone"
     fill_in "City or country", with: "Nairobi"
     click_button "Nairobi"
-    expect(page).to have_button("Nairobi (Africa/Nairobi)")
+    expect(page).to have_text("Nairobi (Africa/Nairobi)")
     click_button "Add your availability"
     expect(page).to have_text(/\b[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2}, \d{4}, \d{1,2}:\d{2} [AP]M\b/)
     expect(page).to have_css('textarea#response-comment[rows="2"]')

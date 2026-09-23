@@ -32,15 +32,22 @@
       <span data-share-link-target="status" role="status" class="sr-only"></span>
     </section>
 
-    <section class="grid gap-4" aria-labelledby="response-time-zone-heading">
-      <div class="grid gap-2">
-        <h2 id="response-time-zone-heading" class="text-lg font-bold">Your time zone</h2>
-        <label for="response-time-zone" class="sr-only">Your time zone</label>
-        <select id="response-time-zone" name="time_zone" required data-event-response-target="timeZone" class="sr-only"></select>
-        <button type="button" data-event-response-target="timeZoneButton" data-action="click->event-response#openTimeZoneSearch" class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm hover:bg-slate-50">
-          <span data-event-response-target="timeZoneLabel"></span><span aria-hidden="true">⌄</span>
-        </button>
+    <section class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" aria-label="Add your availability">
+      <div class="flex min-w-0 flex-col items-start gap-1 rounded-lg border border-dashed border-slate-700 px-3 py-2 text-sm text-slate-700 sm:flex-row sm:items-center sm:gap-2">
+        <span class="font-bold">Your time zone:</span>
+        <div class="flex min-w-0 items-center gap-1">
+          <span class="min-w-0 truncate" data-event-response-target="timeZoneLabel"></span>
+          <label for="response-time-zone" class="sr-only">Your time zone</label>
+          <select id="response-time-zone" name="time_zone" required data-event-response-target="timeZone" class="sr-only"></select>
+          <button type="button" aria-label="Change time zone" title="Change time zone" data-event-response-target="timeZoneButton" data-action="click->event-response#openTimeZoneSearch" class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-blue-700">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m4 16.5-.75 3.75L7 19.5 18.5 8a2.121 2.121 0 0 0-3-3L4 16.5Z" />
+              <path stroke-linecap="round" d="m14 6 4 4" />
+            </svg>
+          </button>
+        </div>
       </div>
+      <button type="button" data-action="click->event-response#openCreate" class="w-full rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 sm:w-fit">Add your availability</button>
       <div data-event-response-target="timeZoneDialog" role="dialog" aria-modal="true" aria-labelledby="response-time-zone-heading" hidden>
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div class="absolute inset-0 bg-slate-950/50" data-action="click->event-response#closeTimeZoneSearch"></div>
@@ -55,10 +62,7 @@
           </div>
         </div>
       </div>
-    </section>
 
-    <section class="flex justify-end" aria-label="Add your availability">
-      <button type="button" data-action="click->event-response#openCreate" class="w-full rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 sm:w-fit">Add your availability</button>
       <div data-event-response-target="responseDialog" role="dialog" aria-modal="true" aria-labelledby="availability-modal-heading" hidden>
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div class="absolute inset-0 bg-slate-950/50" data-action="click->event-response#closeResponseModal"></div>
