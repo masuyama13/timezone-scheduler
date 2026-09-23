@@ -134,14 +134,15 @@ export default class extends Controller {
       return
     }
 
+    const mobile = window.matchMedia("(max-width: 639px)").matches
     const visibleInstants = this.instants
     const hours = Math.max(visibleInstants.length, 1)
     const cityColumn = "9rem"
-    const hourColumn = "1.9rem"
+    const hourColumn = mobile ? "1.9rem" : "minmax(0, 1fr)"
     const columns = `${cityColumn} repeat(${hours}, ${hourColumn})`
     const table = document.createElement("div")
-    table.className = "w-max min-w-full"
-    table.style.minWidth = `calc(${cityColumn} + ${hours * 1.9}rem)`
+    table.className = mobile ? "w-max" : "w-full"
+    if (mobile) table.style.minWidth = `calc(${cityColumn} + ${hours * 1.9}rem)`
     table.addEventListener("mouseover", (event) => {
       const cell = event.target.closest("[data-hour-index]")
       if (cell && table.contains(cell)) this.highlightColumn(table, cell.dataset.hourIndex)
