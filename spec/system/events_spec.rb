@@ -47,6 +47,18 @@ RSpec.describe "Shared event", type: :system do
   end
 
 
+  it "keeps long response names inside the name column" do
+    response = event.responses.create!(name: "Honobonononononononononononono", time_zone: "America/Vancouver")
+    event.time_options.order(:starts_at).each do |time_option|
+      response.votes.create!(time_option: time_option, availability: :available)
+    end
+
+    visit event_path(event.public_token)
+
+    expect(page).to have_css("th[scope=\"row\"].break-all")
+    expect(page).to have_css("tfoot th[scope=\"row\"].text-center", text: "Available")
+  end
+
   it "shows response counts and details" do
     response = event.responses.create!(name: "Alex", time_zone: "America/Vancouver", comment: "Looking forward to it")
     event.time_options.order(:starts_at).each_with_index do |time_option, index|

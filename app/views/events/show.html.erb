@@ -82,9 +82,9 @@
               <% @responses.each do |response| %>
                 <% votes_by_time_option = response.votes.index_by(&:time_option_id) %>
                 <tr class="border-b border-slate-200 last:border-b-0">
-                  <th scope="row" class="break-words px-2 py-4 align-middle text-sm font-bold">
+                  <th scope="row" class="break-all px-2 py-4 text-center align-middle text-sm font-bold sm:break-words">
                     <% response_choices = response.votes.each_with_object({}) { |vote, choices| choices[vote.time_option_id] = vote.availability } %>
-                    <button type="button" data-action="click->event-response#edit" data-response-id="<%= response.id %>" data-response-name="<%= response.name %>" data-response-time-zone="<%= response.time_zone %>" data-response-comment="<%= response.comment %>" data-response-choices="<%= json_escape(response_choices.to_json) %>" class="group cursor-pointer text-left text-slate-900 hover:text-blue-700">
+                    <button type="button" data-action="click->event-response#edit" data-response-id="<%= response.id %>" data-response-name="<%= response.name %>" data-response-time-zone="<%= response.time_zone %>" data-response-comment="<%= response.comment %>" data-response-choices="<%= json_escape(response_choices.to_json) %>" class="group block min-w-0 max-w-full cursor-pointer text-left text-slate-900 hover:text-blue-700">
                       <span class="block"><%= response.name %></span>
                       <span class="mt-1 block text-xs font-normal text-slate-500 group-hover:text-blue-700"><%= city_name_for_time_zone(response.time_zone) %></span>
                     </button>
@@ -101,7 +101,7 @@
             </tbody>
             <tfoot>
               <tr class="border-t border-slate-200 text-orange-700">
-                <th scope="row" class="px-4 py-4 text-sm font-bold">Available</th>
+                <th scope="row" class="whitespace-nowrap px-2 py-4 text-center text-sm font-bold">Available</th>
                 <% time_options.each_with_index do |time_option, index| %>
                   <% available_count = available_counts.fetch(time_option.id) %>
                   <% count_weight = maximum_available&.positive? && available_count == maximum_available ? "font-bold" : "font-normal" %>
