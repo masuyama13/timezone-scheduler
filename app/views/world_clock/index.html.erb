@@ -9,8 +9,8 @@
 
   <main class="mx-auto grid min-w-0 max-w-4xl gap-10 px-4 py-6 sm:px-6 sm:py-8">
     <section class="min-w-0" aria-label="World Clock">
-      <div class="flex items-center gap-2">
-        <div class="min-w-0 flex-1 items-center justify-start gap-0.5" data-time-grid-target="dateControls" hidden>
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="min-w-fit flex-[1_0_auto] items-center justify-start gap-0.5" data-time-grid-target="dateControls" hidden>
           <button type="button" aria-label="Previous week" title="Previous week" data-action="time-grid#previousWeek" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-brand-700 hover:text-brand-900">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m11 6-6 6 6 6M18 6l-6 6 6 6" /></svg>
           </button>
@@ -18,7 +18,7 @@
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m14 6-6 6 6 6" /></svg>
           </button>
           <label for="comparison-date" class="sr-only">Comparison date</label>
-          <input id="comparison-date" type="date" data-time-grid-target="dateInput" data-action="change->time-grid#changeDate" class="min-w-0 w-[7rem] max-w-full rounded-lg border border-slate-300 px-1.5 py-2 text-sm sm:w-auto sm:px-2">
+          <input id="comparison-date" type="date" data-time-grid-target="dateInput" data-action="change->time-grid#changeDate" class="w-[9rem] shrink-0 rounded-lg border border-slate-300 px-1.5 py-2 text-sm sm:w-auto sm:px-2">
           <button type="button" aria-label="Next day" title="Next day" data-action="time-grid#nextDay" class="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg text-brand-700 hover:text-brand-900">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m10 6 6 6-6 6" /></svg>
           </button>
@@ -26,7 +26,7 @@
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m6 6 6 6-6 6M13 6l6 6-6 6" /></svg>
           </button>
         </div>
-        <button type="button" data-world-clock-target="addCityButton" data-action="click->world-clock#openAdd" class="shrink-0 rounded-lg bg-brand-700 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">+ Add city</button>
+        <button type="button" data-world-clock-target="addCityButton" data-action="click->world-clock#openAdd" class="ml-auto shrink-0 rounded-lg bg-brand-700 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">+ Add city</button>
       </div>
 
       <div class="w-full text-right">
