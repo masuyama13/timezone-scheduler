@@ -22,6 +22,15 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_content("2 of 10 cities")
   end
 
+  it "searches cities from different regions" do
+    open_city_search
+    fill_in "City or country", with: "Cape Town"
+    expect(page).to have_css("button[data-city-key='cape-town']")
+    find("button[data-city-key='cape-town']").click
+
+    expect(page).to have_content("Cape Town")
+  end
+
   it "prevents adding the same city twice" do
     add_city("Vancouver", "vancouver")
     open_city_search
