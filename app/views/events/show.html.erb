@@ -54,7 +54,11 @@
           <div class="relative z-10 h-[28rem] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h3 id="response-time-zone-heading" class="text-lg font-bold">Search cities</h3>
-              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50" data-action="click->event-response#closeTimeZoneSearch">×</button>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50" data-action="click->event-response#closeTimeZoneSearch">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                  <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
             <label for="response-time-zone-search" class="mt-5 block text-sm font-bold">City or country</label>
             <input id="response-time-zone-search" type="search" autocomplete="off" placeholder="Tokyo or Canada" data-event-response-target="timeZoneSearch" data-action="input->event-response#searchTimeZones" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3">
@@ -69,7 +73,11 @@
           <div class="relative z-10 max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
             <div class="flex items-center justify-between gap-4">
               <h2 id="availability-modal-heading" data-event-response-target="modalTitle" class="text-xl font-bold">Add your availability</h2>
-              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50" data-action="click->event-response#closeResponseModal">×</button>
+              <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50" data-action="click->event-response#closeResponseModal">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                  <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
             <form data-event-response-target="form" data-action="submit->event-response#submit" class="mt-5 grid gap-4">
               <div class="grid gap-2">
