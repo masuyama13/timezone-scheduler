@@ -79,7 +79,7 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_text("Selected time")
     expect(page).to have_text("Vancouver")
     expect(page).to have_text("Tokyo")
-    expect(page).to have_css('[data-candidate-share-target="times"] p', count: 2)
+    expect(page).to have_css('textarea[data-candidate-share-target="times"]')
   end
 
   it "copies the selected candidate times" do
@@ -89,13 +89,11 @@ RSpec.describe "Shared event", type: :system do
     visit event_path(event.public_token)
     page.execute_script("navigator.clipboard.writeText = (text) => { window.__copiedText = text; return Promise.resolve(); }")
     find('th[data-candidate-share-column-index="0"]').click
+    fill_in "Times to share", with: "Vancouver: Custom time\nTokyo: Custom time"
     click_button "Copy as text"
 
     expect(page).to have_text("Copied", wait: 5)
-    copied_text = page.evaluate_script("window.__copiedText")
-    expect(copied_text).not_to include("Planning session")
-    expect(copied_text).to include("Vancouver:")
-    expect(copied_text).to include("Tokyo:")
+    expect(page.evaluate_script("window.__copiedText")).to eq("Vancouver: Custom time\nTokyo: Custom time")
   end
 
   it "submits an availability response" do

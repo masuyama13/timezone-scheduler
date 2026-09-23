@@ -35,13 +35,12 @@ export default class extends Controller {
   close() {
     this.dialogTarget.hidden = true
     this.selectedInstant = null
-    this.timesTarget.replaceChildren()
+    this.timesTarget.value = ""
     this.hideStatus()
   }
 
   async copy() {
-    const lines = this.timeZones().map((timeZone) => `${this.cityName(timeZone)}: ${this.formatDate(this.selectedInstant, timeZone)}`)
-    const text = lines.join("\n")
+    const text = this.timesTarget.value
 
     this.copyTarget.disabled = true
     try {
@@ -81,13 +80,9 @@ export default class extends Controller {
   }
 
   renderTimes() {
-    this.timesTarget.replaceChildren()
-    this.timeZones().forEach((timeZone) => {
-      const row = document.createElement("p")
-      row.className = "text-sm text-slate-700"
-      row.textContent = `${this.cityName(timeZone)}: ${this.formatDate(this.selectedInstant, timeZone)}`
-      this.timesTarget.append(row)
-    })
+    this.timesTarget.value = this.timeZones()
+      .map((timeZone) => `${this.cityName(timeZone)}: ${this.formatDate(this.selectedInstant, timeZone)}`)
+      .join("\n")
   }
 
   cityName(timeZone) {

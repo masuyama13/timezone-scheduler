@@ -116,7 +116,8 @@
               <button type="button" aria-label="Close" title="Close" class="flex h-8 w-8 items-center justify-center rounded-lg text-blue-700 hover:bg-blue-50" data-action="click->candidate-share#close">×</button>
             </div>
             <p data-candidate-share-target="date" class="mt-5 text-lg font-bold text-slate-900"></p>
-            <div data-candidate-share-target="times" class="mt-4 grid gap-3"></div>
+            <label for="candidate-share-text" class="sr-only">Times to share</label>
+            <textarea id="candidate-share-text" data-candidate-share-target="times" rows="4" class="mt-4 w-full resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700"></textarea>
             <div class="relative mt-6">
               <button type="button" data-candidate-share-target="copy" data-action="click->candidate-share#copy" class="w-full rounded-lg bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-wait disabled:opacity-60">Copy as text</button>
               <p data-candidate-share-target="status" role="status" class="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-xs text-white opacity-0 shadow-lg"></p>
