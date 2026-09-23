@@ -2,11 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 import { CITY_CATALOG } from "city_catalog"
 
 export default class extends Controller {
-  static targets = ["dialog", "date", "times"]
-  static values = { eventName: String, eventTimeZone: String, respondentTimeZones: Array }
+  static targets = ["dialog", "date", "times", "copy", "status"]
+  static values = { eventTimeZone: String, respondentTimeZones: Array }
 
   connect() {
     this.selectedInstant = null
+    this.statusTimer = null
   }
 
   highlightColumn(event) {
@@ -35,6 +36,35 @@ export default class extends Controller {
     this.dialogTarget.hidden = true
     this.selectedInstant = null
     this.timesTarget.replaceChildren()
+    this.hideStatus()
+  }
+
+  async copy() {
+    const lines = this.timeZones().map((timeZone) => `${this.cityName(timeZone)}: ${this.formatDate(this.selectedInstant, timeZone)}`)
+    const text = lines.join("\n")
+
+    this.copyTarget.disabled = true
+    try {
+      await navigator.clipboard.writeText(text)
+      this.showStatus("Copied")
+    } catch (_error) {
+      this.showStatus("Could not copy the times. Please copy them manually.", true)
+    } finally {
+      this.copyTarget.disabled = false
+    }
+  }
+
+  showStatus(message, error = false) {
+    clearTimeout(this.statusTimer)
+    this.statusTarget.className = `pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg px-3 py-2 text-xs text-white shadow-lg ${error ? "bg-amber-700" : "bg-slate-900"}`
+    this.statusTarget.textContent = message
+    this.statusTimer = setTimeout(() => this.hideStatus(), 2500)
+  }
+
+  hideStatus() {
+    clearTimeout(this.statusTimer)
+    this.statusTarget.className = "pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-xs text-white opacity-0 shadow-lg"
+    this.statusTarget.textContent = ""
   }
 
   columnElements(element) {

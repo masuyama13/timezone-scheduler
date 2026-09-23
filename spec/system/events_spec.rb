@@ -82,6 +82,22 @@ RSpec.describe "Shared event", type: :system do
     expect(page).to have_css('[data-candidate-share-target="times"] p', count: 2)
   end
 
+  it "copies the selected candidate times" do
+    response = event.responses.create!(name: "Hana", time_zone: "Asia/Tokyo")
+    event.time_options.order(:starts_at).each { |time_option| response.votes.create!(time_option: time_option, availability: :available) }
+
+    visit event_path(event.public_token)
+    page.execute_script("navigator.clipboard.writeText = (text) => { window.__copiedText = text; return Promise.resolve(); }")
+    find('th[data-candidate-share-column-index="0"]').click
+    click_button "Copy as text"
+
+    expect(page).to have_text("Copied", wait: 5)
+    copied_text = page.evaluate_script("window.__copiedText")
+    expect(copied_text).not_to include("Planning session")
+    expect(copied_text).to include("Vancouver:")
+    expect(copied_text).to include("Tokyo:")
+  end
+
   it "submits an availability response" do
     click_button "Add your availability"
     fill_in "Name", with: "Alex"
