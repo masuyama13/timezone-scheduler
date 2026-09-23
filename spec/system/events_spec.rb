@@ -180,6 +180,14 @@ RSpec.describe "Shared event", type: :system do
       click_button "Delete response"
     end
 
+    Timeout.timeout(5) do
+      loop do
+        break unless event.reload.responses.exists?
+        sleep 0.1
+      end
+    end
+
+    visit event_path(event.public_token)
     expect(page).to have_text("No responses yet.", wait: 5)
   end
 
