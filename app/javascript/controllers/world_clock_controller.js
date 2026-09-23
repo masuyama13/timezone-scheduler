@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { CITY_CATALOG } from "city_catalog"
+import { findCatalogTimeZone } from "time_zone_utils"
 
 const MAX_CITIES = 10
 const STORAGE_KEY = "timezone-scheduler.world-clock"
@@ -185,7 +186,8 @@ export default class extends Controller {
     }
 
     const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const detected = CITY_CATALOG.find((city) => city.timeZone === browserTimeZone)
+    const detectedTimeZone = findCatalogTimeZone(CITY_CATALOG, browserTimeZone)
+    const detected = CITY_CATALOG.find((city) => city.timeZone === detectedTimeZone)
     return detected ? [{ ...detected, primary: true }] : []
   }
 

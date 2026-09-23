@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { CITY_CATALOG } from "city_catalog"
+import { findCatalogTimeZone } from "time_zone_utils"
 
 export default class extends Controller {
   static targets = [
@@ -31,12 +32,9 @@ export default class extends Controller {
       browserTimeZone = null
     }
 
-    const availableTimeZones = new Set(CITY_CATALOG.map((city) => city.timeZone))
-    const selectedTimeZone = availableTimeZones.has(browserTimeZone)
-      ? browserTimeZone
-      : availableTimeZones.has(this.fallbackTimeZoneValue)
-        ? this.fallbackTimeZoneValue
-        : CITY_CATALOG[0]?.timeZone
+    const selectedTimeZone = findCatalogTimeZone(CITY_CATALOG, browserTimeZone) ||
+      findCatalogTimeZone(CITY_CATALOG, this.fallbackTimeZoneValue) ||
+      CITY_CATALOG[0]?.timeZone
 
     if (selectedTimeZone) this.timeZoneTarget.value = selectedTimeZone
     this.formTimeZone = selectedTimeZone

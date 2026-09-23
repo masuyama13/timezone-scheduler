@@ -47,6 +47,20 @@ RSpec.describe "Shared event", type: :system do
   end
 
 
+  it "matches browser timezone aliases when choosing a response timezone" do
+    result = page.evaluate_async_script(<<~JS)
+      const done = arguments[0]
+      import("time_zone_utils").then(({ findCatalogTimeZone }) => {
+        done(findCatalogTimeZone([
+          { timeZone: "Asia/Kolkata" },
+          { timeZone: "Asia/Tokyo" }
+        ], "Asia/Calcutta"))
+      })
+    JS
+
+    expect(result).to eq("Asia/Kolkata")
+  end
+
   it "keeps long response names inside the name column" do
     response = event.responses.create!(name: "Honobonononononononononononono", time_zone: "America/Vancouver")
     event.time_options.order(:starts_at).each do |time_option|

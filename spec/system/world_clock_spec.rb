@@ -31,6 +31,20 @@ RSpec.describe "World Clock", type: :system do
     expect(page).to have_content("Cape Town")
   end
 
+  it "matches browser timezone aliases to catalog cities" do
+    result = page.evaluate_async_script(<<~JS)
+      const done = arguments[0]
+      import("time_zone_utils").then(({ findCatalogTimeZone }) => {
+        done(findCatalogTimeZone([
+          { timeZone: "Asia/Kolkata" },
+          { timeZone: "Asia/Tokyo" }
+        ], "Asia/Calcutta"))
+      })
+    JS
+
+    expect(result).to eq("Asia/Kolkata")
+  end
+
   it "prevents adding the same city twice" do
     add_city("Vancouver", "vancouver")
     open_city_search
